@@ -1,35 +1,35 @@
 # UEFA Club Competitions Simulator (in development)
 
-Dette prosjektet simulerer UEFA Champions League, Europa League og Europa Conference League ved hjelp av klubbdata (og Elo-rangeringer?).
+This project simulates the UEFA Champions League, Europa League, and Europa Conference League using club data (and Elo ratings?).
 
-## Struktur
+## Structure
 
-Prosjektet er delt inn i flere pakker:
+The project is divided into several packages:
 
-- `com.example`: Inneholder hovedklassen `UefaCCSim`.
-- `com.example.rounds`: Inneholder klasser som representerer forskjellige runder i turneringene.
-- `com.example.clubs`: Inneholder klasser som representerer klubber og land.
-- `com.example.api`: Inneholder klassen `ClubEloAPI` som henter og lagrer Elo-rangeringer for klubber.
+- `com.example`: Contains the main class `UefaCCSim`.
+- `com.example.rounds`: Contains classes representing different rounds in the tournaments.
+- `com.example.clubs`: Contains classes representing clubs and countries.
+- `com.example.api`: Contains the class `ClubEloAPI` which fetches and stores Elo ratings for clubs.
 
-## Hvordan kjøre
+## How to Run
 
-1. Klon prosjektet til din lokale maskin.
-2. Åpne prosjektet i din favoritt-IDE.
-3. Kjør `UefaCCSim`-klassen som inneholder `main`-metoden.
+1. Clone the project to your local machine.
+2. Open the project in your favorite IDE.
+3. Run the `UefaCCSim` class which contains the `main` method.
 
 ```bash
 git clone <repository-url>
 cd uefa_cc_sim
-# Åpne prosjektet i IDE og kjør UefaCCSim.java
+# Open the project in IDE and run UefaCCSim.java
 ```
 
-## Avhengigheter
+## Dependencies
 
-Prosjektet bruker følgende avhengigheter:
+The project uses the following dependencies:
 
-- Jackson: For å lese JSON-data.
-- Java Standard Library: For grunnleggende funksjonalitet.
+- Jackson: For reading JSON data.
+- Java Standard Library: For basic functionality.
 
-## Lisens
+## License
 
-Dette prosjektet er lisensiert under MIT-lisensen.
+This project is licensed under the MIT License.
