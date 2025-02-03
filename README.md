@@ -1,4 +1,4 @@
-# UEFA Club Competitions Simulator
+# UEFA Club Competitions Simulator (in development)
 
 Dette prosjektet simulerer UEFA Champions League, Europa League og Europa Conference League ved hjelp av klubbdata (og Elo-rangeringer?).
 
