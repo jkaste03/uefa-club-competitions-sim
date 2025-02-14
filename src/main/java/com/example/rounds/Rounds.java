@@ -6,6 +6,10 @@ import java.util.List;
 
 import com.example.api.ClubEloAPI;
 
+/**
+ * The Rounds class initializes and links all the qualifying rounds for the UEFA
+ * competitions.
+ */
 public class Rounds {
     private static QRound uclQ1CP, uclQ2CP, uclQ2LP, uclQ3CP, uclQ3LP, uclPoCP, uclPoLP, uclLP;
     private static QRound uelQ1MP, uelQ2MP, uelQ3MP, uelQ3CP, uelPo, uelLP;
@@ -13,6 +17,9 @@ public class Rounds {
 
     private static List<Round> rounds;
 
+    /**
+     * Constructor that initializes all the qualifying rounds and links them.
+     */
     public Rounds() {
         new ClubEloAPI();
         uclQ1CP = new QRound("uclQ1CP");
@@ -47,6 +54,9 @@ public class Rounds {
         linkRounds();
     }
 
+    /**
+     * Links the rounds by setting the next primary and secondary rounds.
+     */
     private static void linkRounds() {
         uclQ1CP.setNextRounds(uclQ2CP, ueclQ2CP);
         uclQ2CP.setNextRounds(uclQ3CP, uelQ3CP);
@@ -71,14 +81,17 @@ public class Rounds {
         ueclPoCP.setNextRound(ueclLP);
     }
 
-    @Override
-    public String toString() {
-        return "Rounds [" + Arrays.toString(rounds.toArray()) + "]";
-    }
-
+    /**
+     * Runs all the rounds.
+     */
     public void run() {
         for (Round round : rounds) {
             round.run();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Rounds [" + Arrays.toString(rounds.toArray()) + "]";
     }
 }

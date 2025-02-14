@@ -2,37 +2,48 @@ package com.example.clubs;
 
 import com.example.api.ClubEloAPI;
 
-public class Club {
+/**
+ * Class representing a club in the UEFA competitions.
+ */
+public class Club extends ClubSlot {
     private String name;
     private Country country;
+    private float ranking;
     private double eloRating;
 
-    public Club(String name, Country country) {
+    /**
+     * Constructor that initializes the club with a name, country and uefa ranking,
+     * and fetches
+     * its Elo rating.
+     * 
+     * @param name    the name of the club.
+     * @param country the country of the club.
+     * @param ranking the uefa ranking of the club.
+     */
+    public Club(String name, Country country, float ranking) {
         this.name = name;
-        Double rating = ClubEloAPI.getEloRating(name);
-        if (rating == null) {
-            System.out.println("Club not found: " + name);
-            this.eloRating = 0.0; // or any default value
-        } else {
-            this.eloRating = rating;
-        }
         this.country = country;
+        this.ranking = ranking;
+        this.eloRating = ClubEloAPI.getEloRating(name);
+        if (this.eloRating == 0.0) {
+            System.out.println("Club not found: " + name);
+        }
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String navn) {
-        this.name = navn;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Country getCountry() {
         return country;
     }
 
-    public void setCountry(Country land) {
-        this.country = land;
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
     public double getEloRating() {
@@ -44,7 +55,13 @@ public class Club {
     }
 
     @Override
+    public float getRanking() {
+        return ranking;
+    }
+
+    @Override
     public String toString() {
-        return "Club [name=" + name + ", country=" + country + ", eloRating=" + eloRating + "]";
+        return "Club [name=" + name + ", country=" + country + ", ranking=" + ranking + ", eloRating=" + eloRating
+                + "]";
     }
 }
