@@ -4,7 +4,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.clubs.ClubSlot;
-import com.example.clubs.Country;
+import com.example.enums.Country;
 
 package com.example.rounds;
 

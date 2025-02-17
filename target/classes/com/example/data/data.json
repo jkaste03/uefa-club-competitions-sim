@@ -1,6 +1,6 @@
 {
     "rounds": {
-        "uclQ1CP": [
+        "CHAMPIONS_LEAGUE Q1 CHAMPIONS_PATH": [
             {"club": "Steaua", "ranking": 149.0, "country": "ROM"},
             {"club": "Razgrad", "ranking": 70.0, "country": "BUL"},
             {"club": "Slovan Bratislava", "ranking": 61.0, "country": "SLK"},
@@ -30,7 +30,7 @@
             {"club": "Decic", "ranking": 427.0, "country": "MNT"},
             {"club": "SS Virtus", "ranking": 476.0, "country": "SMR"}
         ],
-        "uclQ2CP": [
+        "CHAMPIONS_LEAGUE Q2 CHAMPIONS_PATH": [
             {"club": "Sparta Praha", "ranking": 77.0, "country": "CZE"},
             {"club": "Bodoe Glimt", "ranking": 66.0, "country": "NOR"},
             {"club": "Midtjylland", "ranking": 71.0, "country": "DEN"},
@@ -42,13 +42,13 @@
             {"club": "Ferencvaros", "ranking": 55.0, "country": "HUN"},
             {"club": "Karabakh Agdam", "ranking": 57.0, "country": "AZE"}
         ],
-        "uclQ2LP": [
+        "CHAMPIONS_LEAGUE Q2 LEAGUE_PATH": [
             {"club": "Partizan", "ranking": 72.0, "country": "SRB"},
             {"club": "Fenerbahce", "ranking": 53.0, "country": "TUR"},
             {"club": "Lugano", "ranking": 173.0, "country": "SUI"},
             {"club": "Dynamo Kyiv", "ranking": 68.0, "country": "UKR"}
         ],
-        "uclQ3LP": [
+        "CHAMPIONS_LEAGUE Q3 LEAGUE_PATH": [
             {"club": "Lille", "ranking": 45.0, "country": "FRA"},
             {"club": "Twente", "ranking": 124.0, "country": "NED"},
             {"club": "St Gillis", "ranking": 67.0, "country": "BEL"},
@@ -56,13 +56,13 @@
             {"club": "Salzburg", "ranking": 40.0, "country": "AUT"},
             {"club": "Slavia Praha", "ranking": 35.0, "country": "CZE"}
         ],
-        "uclPoCP": [
+        "CHAMPIONS_LEAGUE PLAYOFF CHAMPIONS_PATH": [
             {"club": "Crvena Zvezda", "ranking": 50.0, "country": "SRB"},
             {"club": "Galatasaray", "ranking": 60.0, "country": "TUR"},
             {"club": "Young Boys", "ranking": 56.0, "country": "SUI"},
             {"club": "Dinamo Zagreb", "ranking": 39.0, "country": "CRO"}
         ],
-        "uclLP": [
+        "CHAMPIONS_LEAGUE LEAGUE_PHASE": [
             {"club": "Real Madrid", "ranking": 3.0, "country": "ESP"},
             {"club": "Atalanta", "ranking": 17.0, "country": "ITA"},
             {"club": "Man City", "ranking": 1.0, "country": "ENG"},
@@ -93,7 +93,7 @@
             {"club": "Sturm Graz", "ranking": 109.0, "country": "AUT"},
             {"club": "Shakhtar", "ranking": 27.0, "country": "UKR"}
         ],
-        "uelQ1MP": [
+        "EUROPA_LEAGUE Q1 MAIN_PATH": [
             {"club": "Paphos", "ranking": 316.0, "country": "CYP"},
             {"club": "Elfsborg", "ranking": 326.0, "country": "SWE"},
             {"club": "Wisla", "ranking": 291.0, "country": "POL"},
@@ -107,7 +107,7 @@
             {"club": "Sheriff Tiraspol", "ranking": 86.0, "country": "MOL"},
             {"club": "Llapi", "ranking": 402.0, "country": "KOS"}
         ],
-        "uelQ2MP": [
+        "EUROPA_LEAGUE Q2 MAIN_PATH": [
             {"club": "Ajax", "ranking": 24.0, "country": "NED"},
             {"club": "Braga", "ranking": 42.0, "country": "POR"},
             {"club": "Cercle Brugge", "ranking": 25.0, "country": "BEL"},
@@ -121,19 +121,19 @@
             {"club": "Panathinaikos", "ranking": 239.0, "country": "GRE"},
             {"club": "M Petach Tikva", "ranking": 253.0, "country": "ISR"}
         ],
-        "uelQ3MP": [
+        "EUROPA_LEAGUE Q3 MAIN_PATH": [
             {"club": "Servette", "ranking": 163.0, "country": "SUI"},
             {"club": "Kryvbas", "ranking": 269.0, "country": "UKR"},
             {"club": "Viktoria Plzen", "ranking": 64.0, "country": "CZE"}
         ],
-        "uelPo": [
+        "EUROPA_LEAGUE PLAYOFF MAIN_PATH": [
             {"club": "Anderlecht", "ranking": 111.0, "country": "BEL"},
             {"club": "Hearts", "ranking": 198.0, "country": "SCO"},
             {"club": "LASK", "ranking": 52.0, "country": "AUT"},
             {"club": "Backa Topola", "ranking": 270.0, "country": "SRB"},
             {"club": "Besiktas", "ranking": 129.0, "country": "TUR"}
         ],
-        "uelLP": [
+        "EUROPA_LEAGUE LEAGUE_PHASE": [
             {"club": "Olympiakos", "ranking": 44.0, "country": "GRE"},
             {"club": "Man United", "ranking": 11.0, "country": "ENG"},
             {"club": "Tottenham", "ranking": 34.0, "country": "ENG"},
@@ -148,7 +148,7 @@
             {"club": "Alkmaar", "ranking": 41.0, "country": "NED"},
             {"club": "Porto", "ranking": 21.0, "country": "POR"}
         ],
-        "ueclQ1MP": [
+        "CONFERENCE_LEAGUE Q1 MAIN_PATH": [
             {"club": "Aktobe", "ranking": 405.0, "country": "KAZ"},
             {"club": "Bravo", "ranking": 379.0, "country": "SVN"},
             {"club": "Milsami Orhei", "ranking": 294.0, "country": "MOL"},
@@ -200,7 +200,7 @@
             {"club": "La Fiorita", "ranking": 309.0, "country": "SMR"},
             {"club": "Tre Penne", "ranking": 278.0, "country": "SMR"}
         ],
-        "ueclQ2MP": [
+        "CONFERENCE_LEAGUE Q2 MAIN_PATH": [
             {"club": "Go Ahead Eagles", "ranking": 125.0, "country": "NED"},
             {"club": "Guimaraes", "ranking": 137.0, "country": "POR"},
             {"club": "Gent", "ranking": 46.0, "country": "BEL"},
@@ -257,7 +257,7 @@
             {"club": "Saburtalo", "ranking": 313.0, "country": "GEO"},
             {"club": "Cliftonville", "ranking": 429.0, "country": "NIR"}
         ],
-        "ueclPoMP": [
+        "CONFERENCE_LEAGUE PLAYOFF MAIN_PATH": [
             {"club": "Chelsea", "ranking": 10.0, "country": "ENG"},
             {"club": "Betis", "ranking": 58.0, "country": "ESP"},
             {"club": "Heidenheim", "ranking": 102.1, "country": "GER"},

@@ -3,8 +3,10 @@ package com.example.rounds;
 import java.util.List;
 
 import com.example.clubs.Club;
+import com.example.clubs.ClubIdWrapper;
 import com.example.clubs.ClubSlot;
-import com.example.clubs.Country;
+import com.example.enums.CompetitionData;
+import com.example.enums.Country;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,43 +18,65 @@ import java.util.ArrayList;
  * Abstract class representing a round in the UEFA competitions.
  */
 public abstract class Round {
-    protected String name;
+    protected CompetitionData.Tournament tournament;
+    protected CompetitionData.RoundType roundType;
     protected Round nextPrimaryRnd;
     protected Round nextSecondaryRnd;
     protected List<ClubSlot> clubSlots = new ArrayList<>();
     protected List<Tie> ties = new ArrayList<>();
 
     /**
-     * Constructor that initializes the round with a name.
+     * Constructor that initializes the round with a tournament and round type.
      * 
-     * @param name the name of the round.
+     * @param tournament the tournament of the round.
+     * @param roundType  the type of the round.
      */
-    public Round(String name) {
-        this.name = name;
+    public Round(CompetitionData.Tournament tournament, CompetitionData.RoundType roundType) {
+        this.tournament = tournament;
+        this.roundType = roundType;
     }
 
-    public String getName() {
-        return name;
+    public abstract String getName();
+
+    public CompetitionData.Tournament getTournament() {
+        return tournament;
     }
 
-    /**
-     * Sets the next primary and secondary rounds.
-     * 
-     * @param nextPrimaryRnd   the next primary round.
-     * @param nextSecondaryRnd the next secondary round.
-     */
+    public CompetitionData.RoundType getRoundType() {
+        return roundType;
+    }
+
+    public Round getNextPrimaryRnd() {
+        return nextPrimaryRnd;
+    }
+
+    public Round getNextSecondaryRnd() {
+        return nextSecondaryRnd;
+    }
+
     public void setNextRounds(Round nextPrimaryRnd, Round nextSecondaryRnd) {
         this.nextPrimaryRnd = nextPrimaryRnd;
         this.nextSecondaryRnd = nextSecondaryRnd;
     }
 
-    /**
-     * Sets the next primary round.
-     * 
-     * @param nextPrimaryRnd the next primary round.
-     */
     public void setNextRound(Round nextPrimaryRnd) {
         this.nextPrimaryRnd = nextPrimaryRnd;
+    }
+
+    public List<ClubSlot> getClubSlots() {
+        return clubSlots;
+    }
+
+    public void setClubSlots(List<ClubSlot> clubSlots) {
+        this.clubSlots = clubSlots;
+    }
+
+    public List<Tie> getTies() {
+        return ties;
+    }
+
+    public void setTies(List<Tie> ties) {
+        this.ties = ties;
     }
 
     /**
@@ -69,7 +93,7 @@ public abstract class Round {
             JsonNode roundsNode = rootNode.path("rounds");
 
             // Find the corresponding round in the JSON data
-            JsonNode roundNode = roundsNode.path(name);
+            JsonNode roundNode = roundsNode.path(getName());
             addClubsFromJsNode(roundNode);
 
         } catch (IOException e) {
@@ -88,7 +112,8 @@ public abstract class Round {
             String clubName = clubNode.path("club").asText();
             Country country = Country.valueOf(clubNode.path("country").asText());
             float ranking = (float) clubNode.path("ranking").asDouble();
-            addClubSlot(new Club(clubName, country, ranking));
+            Club club = new Club(clubName, country, ranking);
+            addClubSlot(new ClubIdWrapper(club.getId()));
         }
     }
 
@@ -125,11 +150,6 @@ public abstract class Round {
     private boolean hasCommonCountry(ClubSlot club1, ClubSlot club2) {
         return club1.getCountries().stream().anyMatch(club2.getCountries()::contains);
     }
-
-    /**
-     * Runs the round.
-     */
-    public abstract void run();
 
     /**
      * Plays the round.

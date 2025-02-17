@@ -1,7 +1,8 @@
 package com.example.rounds;
 
 import com.example.clubs.ClubSlot;
-import com.example.clubs.Country;
+import com.example.enums.Country;
+
 import java.util.HashSet;
 import java.util.Set;
 

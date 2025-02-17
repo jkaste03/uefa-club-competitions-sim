@@ -1,4 +1,4 @@
-package com.example.clubs;
+package com.example.enums;
 
 public enum Country {
     ENG("England"),

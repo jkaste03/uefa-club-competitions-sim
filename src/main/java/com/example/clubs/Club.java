@@ -1,11 +1,16 @@
 package com.example.clubs;
 
+import java.util.List;
+
 import com.example.api.ClubEloAPI;
+import com.example.enums.Country;
 
 /**
  * Class representing a club in the UEFA competitions.
  */
-public class Club extends ClubSlot {
+public class Club {
+    private static int id_counter = 0;
+    private int id;
     private String name;
     private Country country;
     private float ranking;
@@ -21,6 +26,7 @@ public class Club extends ClubSlot {
      * @param ranking the uefa ranking of the club.
      */
     public Club(String name, Country country, float ranking) {
+        this.id = id_counter++;
         this.name = name;
         this.country = country;
         this.ranking = ranking;
@@ -28,6 +34,11 @@ public class Club extends ClubSlot {
         if (this.eloRating == 0.0) {
             System.out.println("Club not found: " + name);
         }
+        Clubs.addClub(this);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -54,9 +65,12 @@ public class Club extends ClubSlot {
         this.eloRating = eloRating;
     }
 
-    @Override
     public float getRanking() {
         return ranking;
+    }
+
+    public List<Country> getCountries() {
+        return List.of(country);
     }
 
     @Override
