@@ -1,6 +1,7 @@
 package com.example.rounds;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.clubs.ClubSlot;
 import com.example.enums.CompetitionData;
@@ -15,8 +16,8 @@ public class QRound extends Round {
     private final static int NO_REBALANCE_UCL_Q1_CP_TIES = 16;
 
     private CompetitionData.PathType pathType;
-    private List<ClubSlot> seededClubs = new ArrayList<>();
-    private List<ClubSlot> unseededClubs = new ArrayList<>();
+    private List<ClubSlot> seededClubSlots = new ArrayList<>();
+    private List<ClubSlot> unseededClubSlots = new ArrayList<>();
 
     /**
      * Constructor that initializes the qualifying round with a name and adds clubs
@@ -48,12 +49,7 @@ public class QRound extends Round {
     }
 
     public void seedDrawNextIfQRound() {
-        if (nextPrimaryRnd instanceof QRound) {
-            ((QRound) nextPrimaryRnd).trySeedDraw();
-        }
-        if (nextSecondaryRnd != null && nextSecondaryRnd instanceof QRound) {
-            ((QRound) nextSecondaryRnd).trySeedDraw();
-        }
+        trySeedDraw();
     }
 
     /**
@@ -68,12 +64,12 @@ public class QRound extends Round {
         clubSlots.sort((club1, club2) -> Float.compare(club1.getRanking(), club2.getRanking()));
         int halfSize = clubSlots.size() / 2;
 
-        seededClubs = clubSlots.subList(0, halfSize);
-        unseededClubs = clubSlots.subList(halfSize, clubSlots.size());
-        System.out.println("\n" + getName() + ", seeded clubs: ");
-        seededClubs.forEach(clubSlot -> System.out.println(clubSlot.getName()));
-        System.out.println("\n" + getName() + ", unseeded clubs: ");
-        unseededClubs.forEach(clubSlot -> System.out.println(clubSlot.getName()));
+        seededClubSlots = clubSlots.subList(0, halfSize);
+        unseededClubSlots = clubSlots.subList(halfSize, clubSlots.size());
+        System.out.println("\n" + getName() + ", seeded clubs:");
+        seededClubSlots.forEach(clubSlot -> System.out.println(clubSlot.getName()));
+        System.out.println("\n" + getName() + ", unseeded clubs:");
+        unseededClubSlots.forEach(clubSlot -> System.out.println(clubSlot.getName()));
     }
 
     /**
@@ -84,13 +80,13 @@ public class QRound extends Round {
      * Then, it pairs the remaining seeded clubs with the remaining unseeded clubs.
      */
     private void draw() {
-        List<ClubSlot> remainingSeeded = new ArrayList<>(seededClubs);
-        List<ClubSlot> remainingUnseeded = new ArrayList<>(unseededClubs);
+        List<ClubSlot> remainingSeeded = new ArrayList<>(seededClubSlots);
+        List<ClubSlot> remainingUnseeded = new ArrayList<>(unseededClubSlots);
         ties.clear();
 
         // First, draw opponents for seeded clubs that have at least one club from the
         // same country among the unseeded
-        seededClubs.stream()
+        seededClubSlots.stream()
                 .filter(seeded -> remainingUnseeded.stream().anyMatch(unseeded -> isIllegalTie(seeded, unseeded)))
                 .forEach(seeded -> {
                     ClubSlot opponent;
@@ -109,6 +105,9 @@ public class QRound extends Round {
             ties.add(Math.random() < 0.5 ? new DoubleLeggedTie(seeded, opponent)
                     : new DoubleLeggedTie(opponent, seeded));
         });
+
+        System.out.println("\n" + getName() + ", ties:");
+        ties.forEach(tie -> System.out.println(tie.getName()));
     }
 
     public void regTiesForNextRounds() {
@@ -144,10 +143,10 @@ public class QRound extends Round {
 
     private void updateClubsFromTieIfClubIsTie(DoubleLeggedTie tie) {
         if (tie.getClubSlot1() instanceof DoubleLeggedTieWrapper) {
-            tie.setClubSlot1(((DoubleLeggedTieWrapper) (tie.getClubSlot1())).getDLTie().getWinner());
+            tie.setClubSlot1(((DoubleLeggedTieWrapper) (tie.getClubSlot1())).getCorrectClubSlot());
         }
         if (tie.getClubSlot2() instanceof DoubleLeggedTieWrapper) {
-            tie.setClubSlot2(((DoubleLeggedTieWrapper) (tie.getClubSlot2())).getDLTie().getWinner());
+            tie.setClubSlot2(((DoubleLeggedTieWrapper) (tie.getClubSlot2())).getCorrectClubSlot());
         }
     }
 
@@ -155,8 +154,7 @@ public class QRound extends Round {
         for (Tie tie : ties) {
             this.nextPrimaryRnd.addClubSlot(tie.getWinner());
             if (this.nextSecondaryRnd != null) {
-                this.nextSecondaryRnd.addClubSlot(tie.getWinner() == tie.getClubSlot1() ? tie.getClubSlot2()
-                        : tie.getClubSlot1());
+                this.nextSecondaryRnd.addClubSlot(tie.getLoser());
             }
         }
     }
@@ -166,6 +164,7 @@ public class QRound extends Round {
      */
     @Override
     public void play() {
+        System.out.println("\n" + getName());
         for (Tie tie : ties) {
             tie.play();
         }
@@ -173,11 +172,9 @@ public class QRound extends Round {
 
     @Override
     public String toString() {
-        return "QRound [name=" + getName() + ", clubSlots=" + clubSlots + ", seededClubs=" + seededClubs
-                + ", unseededClubs="
-                + unseededClubs
-                + ", nextPrimaryRnd=" + (nextPrimaryRnd != null ? nextPrimaryRnd.getName() : "null")
-                + ", nextSecondaryRnd="
+        return "QRound [name=" + getName() + ", clubSlots=" + clubSlots + ", seededClubs=" + seededClubSlots
+                + ", unseededClubs=" + unseededClubSlots + ", nextPrimaryRnd="
+                + (nextPrimaryRnd != null ? nextPrimaryRnd.getName() : "null") + ", nextSecondaryRnd="
                 + (nextSecondaryRnd != null ? nextSecondaryRnd.getName() : "null") + ", ties=" + ties + "]";
     }
 }

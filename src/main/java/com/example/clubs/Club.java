@@ -1,6 +1,7 @@
 package com.example.clubs;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.example.api.ClubEloAPI;
 import com.example.enums.Country;
@@ -32,7 +33,7 @@ public class Club {
         this.ranking = ranking;
         this.eloRating = ClubEloAPI.getEloRating(name);
         if (this.eloRating == 0.0) {
-            System.out.println("Club not found: " + name);
+            System.out.println("Club not found: " + name + " " + eloRating);
         }
         Clubs.addClub(this);
     }
@@ -73,9 +74,27 @@ public class Club {
         return List.of(country);
     }
 
+    // Implement equals() based on the unique id of the club
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Club club = (Club) obj;
+        return id == club.id; // Two clubs are equal if they have the same id
+    }
+
+    // Implement hashCode() based on the id
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Hash code is based on the unique id
+    }
+
     @Override
     public String toString() {
-        return "Club [name=" + name + ", country=" + country + ", ranking=" + ranking + ", eloRating=" + eloRating
-                + "]";
+        return "Club [id=" + id + ", name=" + name + ", country=" + country + ", ranking=" + ranking + ", eloRating="
+                + eloRating + "]";
     }
+
 }

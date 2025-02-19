@@ -89,23 +89,16 @@ public class Rounds {
 
     /**
      * Runs all the rounds.
-     * <p>
-     * Iterates through each round type: filtering rounds by type, performing
-     * seeding, draws,
-     * trying to register ties for the next rounds, seeding the next rounds, and
-     * playing
-     * each round twice.
-     * Execution stops after processing the PLAYOFF round.
-     * </p>
      */
     public void run() {
-        for (RoundType roundType : RoundType.values()) {
-            List<Round> roundsOfType = getRoundsOfType(roundType);
+        RoundType[] roundTypes = RoundType.values();
+        for (int i = 0; i < roundTypes.length; i++) {
+            List<Round> roundsOfType = getRoundsOfType(roundTypes[i]);
             trySeedingDraws(roundsOfType);
             regTiesForNextRndsIfQRound(roundsOfType);
-            seedDrawNextRndsIfQRounds(roundsOfType);
+            seedDrawNextRndsIfQRounds(getRoundsOfType(roundTypes[i + 1]));
             playRounds(roundsOfType);
-            if (roundType == RoundType.PLAYOFF) {
+            if (roundTypes[i] == RoundType.PLAYOFF) {
                 registerTieClubsForLeagues(roundsOfType);
                 break;
             }
@@ -137,8 +130,8 @@ public class Rounds {
      * @param roundsOfType the list of rounds to register ties for
      */
     private void regTiesForNextRndsIfQRound(List<Round> roundsOfType) {
-        Round roundOfTypeNextRnd = roundsOfType.stream().findAny().orElse(null).getNextPrimaryRnd();
-        if (roundOfTypeNextRnd instanceof QRound) {
+        Round nextRound = roundsOfType.stream().findAny().orElse(null).getNextPrimaryRnd();
+        if (nextRound instanceof QRound) {
             roundsOfType.forEach(round -> ((QRound) round).regTiesForNextRounds());
         }
     }
@@ -153,9 +146,7 @@ public class Rounds {
     }
 
     /**
-     * Plays each round in the list for a fixed number of iterations (2 times).
-     *
-     * @param roundsOfType the list of rounds to be played
+     * Plays each round twice.
      */
     private void playRounds(List<Round> roundsOfType) {
         for (int i = 0; i < 2; i++) {

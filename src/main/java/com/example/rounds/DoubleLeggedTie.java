@@ -52,10 +52,12 @@ public class DoubleLeggedTie extends Tie {
 
     private void updateClubSlotsIfTie() {
         if (clubSlot1 instanceof DoubleLeggedTieWrapper) {
-            clubSlot1 = (((DoubleLeggedTieWrapper) clubSlot1).getDLTie()).getWinner();
+            DoubleLeggedTieWrapper clubSlot1DLTieWrapper = ((DoubleLeggedTieWrapper) clubSlot1);
+            clubSlot1 = clubSlot1DLTieWrapper.getCorrectClubSlot();
         }
         if (clubSlot2 instanceof DoubleLeggedTieWrapper) {
-            clubSlot2 = (((DoubleLeggedTieWrapper) clubSlot2).getDLTie()).getWinner();
+            DoubleLeggedTieWrapper clubSlot2DLTieWrapper = ((DoubleLeggedTieWrapper) clubSlot2);
+            clubSlot1 = clubSlot2DLTieWrapper.getCorrectClubSlot();
         }
     }
 

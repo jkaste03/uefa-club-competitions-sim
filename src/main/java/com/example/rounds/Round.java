@@ -109,7 +109,7 @@ public abstract class Round {
     private void addClubsFromJsNode(JsonNode roundNode) {
         // Iterate through the clubs in this round
         for (JsonNode clubNode : roundNode) {
-            String clubName = clubNode.path("club").asText();
+            String clubName = clubNode.path("name").asText();
             Country country = Country.valueOf(clubNode.path("country").asText());
             float ranking = (float) clubNode.path("ranking").asDouble();
             Club club = new Club(clubName, country, ranking);

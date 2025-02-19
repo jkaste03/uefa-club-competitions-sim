@@ -30,6 +30,10 @@ public class DoubleLeggedTieWrapper extends ClubSlot {
         this.worstRankForSeeding = worstRankForSeeding;
     }
 
+    public ClubSlot getCorrectClubSlot() {
+        return worstRankForSeeding ? dLTie.getLoser() : dLTie.getWinner();
+    }
+
     @Override
     public String getName() {
         return dLTie.getName() + (worstRankForSeeding ? " (loser of)" : " (winner of)");
