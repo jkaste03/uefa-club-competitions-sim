@@ -10,44 +10,41 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DoubleLeggedTie extends Tie {
-    private int club1Goals1 = -1;
-    private int club2Goals1 = -1;
-    private int club1Goals2 = -1;
-    private int club2Goals2 = -1;
+    private int club1GoalsLeg1 = -1;
+    private int club2GoalsLeg1 = -1;
 
     public DoubleLeggedTie(ClubSlot club1, ClubSlot club2) {
         super(club1, club2);
     }
 
     public void play() {
-        String club1Name;
-        String club2Name;
-        if (club1Goals1 == -1) {
+        if (club1GoalsLeg1 == -1) {
             updateClubSlotsIfTie();
-            club1Name = ((ClubIdWrapper) clubSlot1).getName();
-            club2Name = ((ClubIdWrapper) clubSlot2).getName();
             int[] results1 = genScoreline();
-            club1Goals1 = results1[0];
-            club2Goals1 = results1[1];
+            club1GoalsLeg1 = results1[0];
+            club2GoalsLeg1 = results1[1];
 
-            System.out
-                    .println(club1Name + " " + club1Goals1 + " - " + club2Goals1 + " " + club2Name
-                            + ". First leg played.");
+            System.out.println(getScorelineLeg1());
         } else {
-            club1Name = ((ClubIdWrapper) clubSlot1).getName();
-            club2Name = ((ClubIdWrapper) clubSlot2).getName();
             int[] results2 = genScoreline();
-            club1Goals2 = results2[0];
-            club2Goals2 = results2[1];
+            club1Goals = club1GoalsLeg1 + results2[0];
+            club2Goals = club2GoalsLeg1 + results2[1];
 
-            genWinner(club1Goals1 + club1Goals2, club2Goals1 + club2Goals2);
+            genWinner(club1Goals, club2Goals);
 
-            System.out.println(
-                    club2Name + " " + (club2Goals1 + club2Goals2) + " (" + club2Goals2
-                            + ") - (" + club1Goals2 + ") "
-                            + (club1Goals1 + club1Goals2) + " " + club1Name
-                            + ". Winner: " + ((ClubIdWrapper) winner).getName());
+            System.out.println(getScoreline());
         }
+    }
+
+    private String getScorelineLeg1() {
+        return clubSlot1.getName() + " " + club1GoalsLeg1 + " - " + club2GoalsLeg1 + " " + clubSlot2.getName()
+                + ". First leg played.";
+    }
+
+    private String getScoreline() {
+        return clubSlot2.getName() + " " + club2Goals + " (" + (club2Goals - club2GoalsLeg1) + ") - ("
+                + (club1Goals - club1GoalsLeg1) + ") " + club1Goals + " " + clubSlot1.getName() + ". Winner: "
+                + winner.getName();
     }
 
     private void updateClubSlotsIfTie() {
@@ -91,13 +88,6 @@ public class DoubleLeggedTie extends Tie {
     }
 
     @Override
-    public String toString() {
-        return "DoubleLeggedTie [club1=" + clubSlot1 + ", club2=" + clubSlot2 + ", club1Goals1=" + club1Goals1
-                + ", club2Goals1=" + club2Goals1 + ", club1Goals2=" + club1Goals2 + ", club2Goals2=" + club2Goals2
-                + ", winner=" + winner + "]";
-    }
-
-    @Override
     public float getRanking() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRanking'");
@@ -106,5 +96,11 @@ public class DoubleLeggedTie extends Tie {
     @Override
     public String getName() {
         return clubSlot1.getName() + " vs " + clubSlot2.getName();
+    }
+
+    @Override
+    public String toString() {
+        return "DoubleLeggedTie [toString()=" + super.toString() + "club1GoalsLeg1=" + club1GoalsLeg1
+                + ", club2GoalsLeg1=" + club2GoalsLeg1 + "]";
     }
 }

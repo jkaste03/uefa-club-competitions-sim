@@ -1,7 +1,6 @@
 package com.example.rounds;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.example.clubs.ClubSlot;
 import com.example.enums.CompetitionData;
@@ -13,7 +12,7 @@ import java.util.Collections;
  * Class representing a qualifying round in the UEFA competitions.
  */
 public class QRound extends Round {
-    private final static int NO_REBALANCE_UCL_Q1_CP_TIES = 16;
+    private final static int UCL_Q1_CP_TIES_NO_REBALANCE = 16;
 
     private CompetitionData.PathType pathType;
     private List<ClubSlot> seededClubSlots = new ArrayList<>();
@@ -34,7 +33,7 @@ public class QRound extends Round {
 
     @Override
     public String getName() {
-        return tournament + " " + roundType + " " + pathType;
+        return super.getName() + " " + pathType;
     }
 
     /**
@@ -67,9 +66,9 @@ public class QRound extends Round {
         seededClubSlots = clubSlots.subList(0, halfSize);
         unseededClubSlots = clubSlots.subList(halfSize, clubSlots.size());
         System.out.println("\n" + getName() + ", seeded clubs:");
-        seededClubSlots.forEach(clubSlot -> System.out.println(clubSlot.getName()));
+        printClubSlotList(seededClubSlots);
         System.out.println("\n" + getName() + ", unseeded clubs:");
-        unseededClubSlots.forEach(clubSlot -> System.out.println(clubSlot.getName()));
+        printClubSlotList(unseededClubSlots);
     }
 
     /**
@@ -138,7 +137,7 @@ public class QRound extends Round {
     }
 
     private boolean tieCanSkipSecondaryRound(int i) {
-        return ifUCLQ1CP() && i < NO_REBALANCE_UCL_Q1_CP_TIES - ties.size();
+        return ifUCLQ1CP() && i < UCL_Q1_CP_TIES_NO_REBALANCE - ties.size();
     }
 
     private void updateClubsFromTieIfClubIsTie(DoubleLeggedTie tie) {
@@ -172,9 +171,7 @@ public class QRound extends Round {
 
     @Override
     public String toString() {
-        return "QRound [name=" + getName() + ", clubSlots=" + clubSlots + ", seededClubs=" + seededClubSlots
-                + ", unseededClubs=" + unseededClubSlots + ", nextPrimaryRnd="
-                + (nextPrimaryRnd != null ? nextPrimaryRnd.getName() : "null") + ", nextSecondaryRnd="
-                + (nextSecondaryRnd != null ? nextSecondaryRnd.getName() : "null") + ", ties=" + ties + "]";
+        return "QRound [name=" + getName() + ", toString()=" + super.toString() + ", seededClubs="
+                + seededClubSlots + ", unseededClubs=" + unseededClubSlots + "]";
     }
 }

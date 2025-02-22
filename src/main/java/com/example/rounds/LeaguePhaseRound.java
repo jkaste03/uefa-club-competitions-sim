@@ -10,11 +10,6 @@ public class LeaguePhaseRound extends Round {
     }
 
     @Override
-    public String getName() {
-        return tournament + " " + roundType;
-    }
-
-    @Override
     public void play() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'play'");

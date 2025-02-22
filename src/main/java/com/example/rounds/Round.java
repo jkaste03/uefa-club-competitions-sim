@@ -36,7 +36,9 @@ public abstract class Round {
         this.roundType = roundType;
     }
 
-    public abstract String getName();
+    public String getName() {
+        return tournament + " " + roundType;
+    }
 
     public CompetitionData.Tournament getTournament() {
         return tournament;
@@ -151,8 +153,19 @@ public abstract class Round {
         return club1.getCountries().stream().anyMatch(club2.getCountries()::contains);
     }
 
+    protected void printClubSlotList(List<ClubSlot> clubSlotList) {
+        clubSlotList.forEach(clubSlot -> System.out.println(clubSlot.getName()));
+    }
+
     /**
      * Plays the round.
      */
     public abstract void play();
+
+    @Override
+    public String toString() {
+        return "Round [nextPrimaryRnd=" + (nextPrimaryRnd != null ? nextPrimaryRnd.getName() : "null")
+                + ", nextSecondaryRnd=" + (nextSecondaryRnd != null ? nextSecondaryRnd.getName() : "null")
+                + ", clubSlots=" + clubSlots + ", ties=" + ties + "]";
+    }
 }

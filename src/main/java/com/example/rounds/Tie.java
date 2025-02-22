@@ -1,12 +1,13 @@
 package com.example.rounds;
 
-import com.example.clubs.Club;
 import com.example.clubs.ClubSlot;
 
 public abstract class Tie extends ClubSlot {
     protected ClubSlot clubSlot1;
     protected ClubSlot clubSlot2;
     protected ClubSlot winner;
+    protected int club1Goals = -1;
+    protected int club2Goals = -1;
 
     public Tie(ClubSlot club1, ClubSlot club2) {
         this.clubSlot1 = club1;
@@ -43,5 +44,11 @@ public abstract class Tie extends ClubSlot {
         int club1Goals = (int) (Math.random() * 4);
         int club2Goals = (int) (Math.random() * 4);
         return new int[] { club1Goals, club2Goals };
+    }
+
+    @Override
+    public String toString() {
+        return "Tie [clubSlot1=" + clubSlot1 + ", clubSlot2=" + clubSlot2 + ", winner=" + winner + ", club1Goals="
+                + club1Goals + ", club2Goals=" + club2Goals + "]";
     }
 }

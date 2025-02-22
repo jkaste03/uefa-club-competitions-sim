@@ -142,7 +142,8 @@ public class Rounds {
      * @param roundsOfType the list of rounds to seed for the following round
      */
     private void seedDrawNextRndsIfQRounds(List<Round> roundsOfType) {
-        roundsOfType.forEach(round -> ((QRound) round).seedDrawNextIfQRound());
+        if (roundsOfType.stream().anyMatch(round -> round instanceof QRound))
+            roundsOfType.forEach(round -> ((QRound) round).seedDrawNextIfQRound());
     }
 
     /**
