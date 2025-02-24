@@ -9,7 +9,7 @@ This project simulates the UEFA Champions League, Europa League, and Conference 
 **Note:** This project is still under active development and is far from complete.
 **Important notes on match outcomes:**
 
-I do not plan to factor in club strength in this simulation. Instead, match outcomes are determined randomly. Although Elo data is available, the logic to generate realistic match outcomes has not been implemented – this functionality is left for others to expand upon. I acknowledge that not incorporating team strength results in nothing close to realistic outcomes, but given my mathematical limitations, I have chosen to focus on other aspects of development.
+**Note:** I do not plan to factor in club strength in this simulation. Instead, match outcomes are determined randomly. Although Elo data is available, the logic to generate realistic match outcomes has not been implemented – this functionality is left for others to expand upon. I acknowledge that not incorporating team strength results in nothing close to realistic outcomes, but given my mathematical limitations, I have chosen to focus on other aspects of development.
 
 ## Structure
 
