@@ -19,7 +19,6 @@ public class DoubleLeggedTie extends Tie {
 
     public void play() {
         if (club1GoalsLeg1 == -1) {
-            updateClubSlotsIfTie();
             int[] results1 = genScoreline();
             club1GoalsLeg1 = results1[0];
             club2GoalsLeg1 = results1[1];
@@ -45,17 +44,6 @@ public class DoubleLeggedTie extends Tie {
         return clubSlot2.getName() + " " + club2Goals + " (" + (club2Goals - club2GoalsLeg1) + ") - ("
                 + (club1Goals - club1GoalsLeg1) + ") " + club1Goals + " " + clubSlot1.getName() + ". Winner: "
                 + winner.getName();
-    }
-
-    private void updateClubSlotsIfTie() {
-        if (clubSlot1 instanceof DoubleLeggedTieWrapper) {
-            DoubleLeggedTieWrapper clubSlot1DLTieWrapper = ((DoubleLeggedTieWrapper) clubSlot1);
-            clubSlot1 = clubSlot1DLTieWrapper.getCorrectClubSlot();
-        }
-        if (clubSlot2 instanceof DoubleLeggedTieWrapper) {
-            DoubleLeggedTieWrapper clubSlot2DLTieWrapper = ((DoubleLeggedTieWrapper) clubSlot2);
-            clubSlot1 = clubSlot2DLTieWrapper.getCorrectClubSlot();
-        }
     }
 
     /**
@@ -100,7 +88,7 @@ public class DoubleLeggedTie extends Tie {
 
     @Override
     public String toString() {
-        return "DoubleLeggedTie [toString()=" + super.toString() + "club1GoalsLeg1=" + club1GoalsLeg1
+        return "DoubleLeggedTie [toString()=" + super.toString() + ", club1GoalsLeg1=" + club1GoalsLeg1
                 + ", club2GoalsLeg1=" + club2GoalsLeg1 + "]";
     }
 }

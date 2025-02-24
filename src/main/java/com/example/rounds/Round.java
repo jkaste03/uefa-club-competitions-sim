@@ -157,6 +157,12 @@ public abstract class Round {
         clubSlotList.forEach(clubSlot -> System.out.println(clubSlot.getName()));
     }
 
+    public void updateClubSlotsInTies() {
+        for (Tie tie : ties) {
+            tie.updateClubSlotsIfTie();
+        }
+    }
+
     /**
      * Plays the round.
      */

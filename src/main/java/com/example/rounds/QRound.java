@@ -1,9 +1,12 @@
 package com.example.rounds;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.example.clubs.ClubSlot;
 import com.example.enums.CompetitionData;
+import com.example.enums.CompetitionData.Tournament;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +16,8 @@ import java.util.Collections;
  */
 public class QRound extends Round {
     private final static int UCL_Q1_CP_TIES_NO_REBALANCE = 16;
+    private final static String ROUND_CLUBS_SKIP_TO = Tournament.CONFERENCE_LEAGUE + " " + CompetitionData.RoundType.Q3
+            + " " + CompetitionData.PathType.CHAMPIONS_PATH;
 
     private CompetitionData.PathType pathType;
     private List<ClubSlot> seededClubSlots = new ArrayList<>();
@@ -47,10 +52,6 @@ public class QRound extends Round {
         }
     }
 
-    public void seedDrawNextIfQRound() {
-        trySeedDraw();
-    }
-
     /**
      * Seeds the clubSlots in the qualifying round.
      * Throws an IllegalArgumentException if the number of clubSlots is odd.
@@ -60,7 +61,11 @@ public class QRound extends Round {
             throw new IllegalArgumentException("The number of clubSlots must be even to seed them properly.");
         }
 
-        clubSlots.sort((club1, club2) -> Float.compare(club1.getRanking(), club2.getRanking()));
+        if (getName().equals(ROUND_CLUBS_SKIP_TO)) {
+            updateClubSlotsIfHasOldWinner(); // Only to avoid incorrect printing of clubs that have skipped a round
+        }
+
+        clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
         int halfSize = clubSlots.size() / 2;
 
         seededClubSlots = clubSlots.subList(0, halfSize);
@@ -69,6 +74,14 @@ public class QRound extends Round {
         printClubSlotList(seededClubSlots);
         System.out.println("\n" + getName() + ", unseeded clubs:");
         printClubSlotList(unseededClubSlots);
+    }
+
+    private void updateClubSlotsIfHasOldWinner() {
+        clubSlots = clubSlots.stream()
+                .map(clubSlot -> clubSlot instanceof DoubleLeggedTieWrapper ? Optional
+                        .ofNullable(((DoubleLeggedTieWrapper) clubSlot).getDLTie().getWinner()).orElse(clubSlot)
+                        : clubSlot)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -112,7 +125,6 @@ public class QRound extends Round {
     public void regTiesForNextRounds() {
         shuffleTiesIfUCLQ1CP();
         for (int i = 0; i < ties.size(); i++) {
-            updateClubsFromTieIfClubIsTie((DoubleLeggedTie) ties.get(i));
             this.nextPrimaryRnd.addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) ties.get(i), false));
             if (this.nextSecondaryRnd != null) {
                 if (tieCanSkipSecondaryRound(i)) {
@@ -140,16 +152,7 @@ public class QRound extends Round {
         return ifUCLQ1CP() && i < UCL_Q1_CP_TIES_NO_REBALANCE - ties.size();
     }
 
-    private void updateClubsFromTieIfClubIsTie(DoubleLeggedTie tie) {
-        if (tie.getClubSlot1() instanceof DoubleLeggedTieWrapper) {
-            tie.setClubSlot1(((DoubleLeggedTieWrapper) (tie.getClubSlot1())).getCorrectClubSlot());
-        }
-        if (tie.getClubSlot2() instanceof DoubleLeggedTieWrapper) {
-            tie.setClubSlot2(((DoubleLeggedTieWrapper) (tie.getClubSlot2())).getCorrectClubSlot());
-        }
-    }
-
-    public void registerTieClubsForLeague() {
+    public void registerClubsForLeague() {
         for (Tie tie : ties) {
             this.nextPrimaryRnd.addClubSlot(tie.getWinner());
             if (this.nextSecondaryRnd != null) {

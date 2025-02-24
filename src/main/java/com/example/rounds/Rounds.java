@@ -10,23 +10,29 @@ import com.example.enums.CompetitionData.RoundType;
 import com.example.enums.CompetitionData.PathType;
 
 /**
- * The Rounds class initializes, links, and executes all the qualifying rounds
- * for UEFA competitions.
- * It provides a structured flow from seeding draws to playing rounds.
+ * The Rounds class is responsible for initializing, linking, and executing all
+ * rounds for UEFA competitions. It sets up the qualifying rounds (QRounds) and
+ * league phase rounds, linking each round to define the progression sequence.
+ * This detailed simulation ensures that seeding, draws, tie registrations, and
+ * match play are executed in an organized manner.
  */
 public class Rounds {
+    // Declare qualifying rounds and league rounds for all competitions.
     private static QRound uclQ1CP, uclQ2CP, uclQ2LP, uclQ3CP, uclQ3LP, uclPoCP, uclPoLP;
     private static QRound uelQ1MP, uelQ2MP, uelQ3MP, uelQ3CP, uelPo;
     private static QRound ueclQ1MP, ueclQ2MP, ueclQ2CP, ueclQ3MP, ueclQ3CP, ueclPoMP, ueclPoCP;
     private static LeaguePhaseRound uclLP, uelLP, ueclLP;
-
     private static List<Round> rounds;
 
     /**
-     * Constructor that initializes all the qualifying rounds and links them.
+     * Constructs all rounds for UEFA competitions, initializes club Elo API,
+     * and sets up the interlink between rounds. This constructor prepares the
+     * simulation by creating each qualifying and league phase round instance.
      */
     public Rounds() {
+        // Initialize external service to fetch club ratings
         new ClubEloAPI();
+        // Create instances for Champions League qualifier rounds.
         uclQ1CP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.Q1, PathType.CHAMPIONS_PATH);
         uclQ2CP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.Q2, PathType.CHAMPIONS_PATH);
         uclQ2LP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.Q2, PathType.LEAGUE_PATH);
@@ -36,6 +42,7 @@ public class Rounds {
         uclPoLP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.PLAYOFF, PathType.LEAGUE_PATH);
         uclLP = new LeaguePhaseRound(Tournament.CHAMPIONS_LEAGUE, RoundType.LEAGUE_PHASE);
 
+        // Create instances for Europa League qualifier rounds.
         uelQ1MP = new QRound(Tournament.EUROPA_LEAGUE, RoundType.Q1, PathType.MAIN_PATH);
         uelQ2MP = new QRound(Tournament.EUROPA_LEAGUE, RoundType.Q2, PathType.MAIN_PATH);
         uelQ3MP = new QRound(Tournament.EUROPA_LEAGUE, RoundType.Q3, PathType.MAIN_PATH);
@@ -43,6 +50,7 @@ public class Rounds {
         uelPo = new QRound(Tournament.EUROPA_LEAGUE, RoundType.PLAYOFF, PathType.MAIN_PATH);
         uelLP = new LeaguePhaseRound(Tournament.EUROPA_LEAGUE, RoundType.LEAGUE_PHASE);
 
+        // Create instances for Conference League qualifier rounds.
         ueclQ1MP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.Q1, PathType.MAIN_PATH);
         ueclQ2MP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.Q2, PathType.MAIN_PATH);
         ueclQ2CP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.Q2, PathType.CHAMPIONS_PATH);
@@ -52,18 +60,22 @@ public class Rounds {
         ueclPoCP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.PLAYOFF, PathType.CHAMPIONS_PATH);
         ueclLP = new LeaguePhaseRound(Tournament.CONFERENCE_LEAGUE, RoundType.LEAGUE_PHASE);
 
+        // Aggregate all rounds into a list for streamlined processing.
         rounds = new ArrayList<>(
                 Arrays.asList(uclQ1CP, uelQ1MP, ueclQ1MP, uclQ2CP, uclQ2LP, uelQ2MP, ueclQ2MP, ueclQ2CP, uclQ3CP,
                         uclQ3LP, uelQ3MP, uelQ3CP, ueclQ3MP, ueclQ3CP, uclPoCP, uclPoLP, uelPo, ueclPoMP, ueclPoCP,
                         uclLP, uelLP, ueclLP));
+        // Link rounds to define the progression flow.
         linkRounds();
     }
 
     /**
-     * Links the rounds by setting the next primary and secondary rounds.
-     * This method configures the progression sequence for each competition round.
+     * Establishes connections between rounds by assigning the next primary and
+     * secondary rounds. These links define the simulation flow from initial
+     * qualifying rounds to the league phase.
      */
     private static void linkRounds() {
+        // Linking for Champions League
         uclQ1CP.setNextRounds(uclQ2CP, ueclQ2CP);
         uclQ2CP.setNextRounds(uclQ3CP, uelQ3CP);
         uclQ2LP.setNextRounds(uclQ3LP, uelQ3MP);
@@ -72,12 +84,14 @@ public class Rounds {
         uclPoCP.setNextRounds(uclLP, uelLP);
         uclPoLP.setNextRounds(uclLP, uelLP);
 
+        // Linking for Europa League
         uelQ1MP.setNextRounds(uelQ2MP, ueclQ2MP);
         uelQ2MP.setNextRounds(uelQ3MP, ueclQ3MP);
         uelQ3MP.setNextRounds(uelPo, ueclPoMP);
         uelQ3CP.setNextRounds(uelPo, ueclPoCP);
         uelPo.setNextRounds(uelLP, ueclLP);
 
+        // Linking for Conference League (single next round linkage in some cases)
         ueclQ1MP.setNextRound(ueclQ2MP);
         ueclQ2MP.setNextRound(ueclQ3MP);
         ueclQ2CP.setNextRound(ueclQ3CP);
@@ -88,89 +102,120 @@ public class Rounds {
     }
 
     /**
-     * Runs all the rounds.
+     * Initiates the simulation by executing all rounds in their respective order.
+     * This method drives the simulation from qualifiers through league matches.
      */
     public void run() {
-        RoundType[] roundTypes = RoundType.values();
-        for (int i = 0; i < roundTypes.length; i++) {
-            List<Round> roundsOfType = getRoundsOfType(roundTypes[i]);
-            trySeedingDraws(roundsOfType);
-            regTiesForNextRndsIfQRound(roundsOfType);
-            seedDrawNextRndsIfQRounds(getRoundsOfType(roundTypes[i + 1]));
-            playRounds(roundsOfType);
-            if (roundTypes[i] == RoundType.PLAYOFF) {
-                registerTieClubsForLeagues(roundsOfType);
-                break;
-            }
-        }
+        // Start by processing the qualifying rounds.
+        runQRounds();
     }
 
     /**
-     * Returns a list of rounds filtered by the specified round type.
+     * Processes each qualifying round by iterating over all round types,
+     * performing seeding, tie registration, and match play. The progression
+     * for each round type is handled sequentially.
+     */
+    private void runQRounds() {
+        // Retrieve all defined round types
+        RoundType[] roundTypes = RoundType.values();
+        List<Round> roundsOfType = null;
+        // Execute seeding and draws for Q1 round type.
+        seedDrawQRounds(getRoundsOfType(RoundType.Q1));
+        for (int i = 0; roundTypes[i] != RoundType.LEAGUE_PHASE; i++) {
+            // Filter rounds by the current round type.
+            roundsOfType = getRoundsOfType(roundTypes[i]);
+            // Update club slots in ties for the current round type.
+            updateClubSlotsInTies(roundsOfType);
+            // Register ties for the next round type.
+            regTiesForNextQRounds(roundsOfType);
+            // Execute seeding and draws for next round type.
+            seedDrawQRounds(getRoundsOfType(roundTypes[i + 1]));
+            // Play the matches of the round type.
+            playRounds(roundsOfType);
+        }
+        // Register clubs for league phase after qualifiers complete.
+        registerClubsForLeagues(roundsOfType);
+    }
+
+    /**
+     * Filters and retrieves rounds that match the specified round type.
      *
-     * @param roundType the round type to filter rounds
-     * @return a list of rounds of the specified type
+     * @param roundType the type of round to filter by
+     * @return a list of rounds matching the round type
      */
     private List<Round> getRoundsOfType(RoundType roundType) {
-        return rounds.stream().filter(round -> round.getRoundType() == roundType).toList();
+        return rounds.stream()
+                .filter(round -> round.getRoundType() == roundType)
+                .toList();
     }
 
     /**
-     * Performs seeding draws for each round in the provided list.
+     * Performs a seeding and draws for all QRounds in the list.
      *
-     * @param roundsOfType the list of rounds to perform seeding draws on
+     * @param roundsOfType list of rounds
      */
-    private void trySeedingDraws(List<Round> roundsOfType) {
-        roundsOfType.forEach(round -> ((QRound) round).trySeedDraw());
+    private void seedDrawQRounds(List<Round> roundsOfType) {
+        if (roundsOfType.get(0) instanceof QRound) {
+            roundsOfType.forEach(round -> {
+                ((QRound) round).trySeedDraw();
+            });
+        }
+    }
+
+    /** Updates club slots in ties for all rounds in the list. */
+    private void updateClubSlotsInTies(List<Round> roundsOfType) {
+        roundsOfType.forEach(round -> {
+            round.updateClubSlotsInTies();
+        });
     }
 
     /**
-     * Registers ties for the subsequent rounds if applicable.
+     * Registers ties for the next rounds if the current rounds are QRounds.
+     * This ensures that winners are correctly aligned for their subsequent matches.
      *
-     * @param roundsOfType the list of rounds to register ties for
+     * @param roundsOfType list of rounds participating in the current qualifier
+     *                     stage
      */
-    private void regTiesForNextRndsIfQRound(List<Round> roundsOfType) {
-        Round nextRound = roundsOfType.stream().findAny().orElse(null).getNextPrimaryRnd();
-        if (nextRound instanceof QRound) {
-            roundsOfType.forEach(round -> ((QRound) round).regTiesForNextRounds());
+    private void regTiesForNextQRounds(List<Round> roundsOfType) {
+        if (roundsOfType.get(0).getNextPrimaryRnd() instanceof QRound) {
+            roundsOfType.forEach(round -> {
+                ((QRound) round).regTiesForNextRounds();
+            });
         }
     }
 
     /**
-     * Initiates the seeding draw for the next rounds.
+     * Executes the match play sequence for each round twice. The first execution
+     * simulates the initial contest and the second ensures proper tie-break
+     * registration.
      *
-     * @param roundsOfType the list of rounds to seed for the following round
-     */
-    private void seedDrawNextRndsIfQRounds(List<Round> roundsOfType) {
-        if (roundsOfType.stream().anyMatch(round -> round instanceof QRound))
-            roundsOfType.forEach(round -> ((QRound) round).seedDrawNextIfQRound());
-    }
-
-    /**
-     * Plays each round twice.
+     * @param roundsOfType list of rounds to simulate matches on
      */
     private void playRounds(List<Round> roundsOfType) {
-        for (int i = 0; i < 2; i++) {
-            roundsOfType.forEach(Round::play);
-        }
+        // First legs of play
+        roundsOfType.forEach(Round::play);
+        // Second legs of play to determine tie outcomes.
+        roundsOfType.forEach(Round::play);
     }
 
     /**
-     * Registers clubs for the next rounds by iterating through the provided list of
-     * rounds.
-     * Each round is cast to a QRound and the method registerTieClubsForLeague is
-     * called on it.
+     * Registers clubs into league rounds after tie matches have concluded.
+     * Each qualifying round casts to QRound to register clubs entering the league
+     * phase.
      *
-     * @param roundsOfType a list of rounds to register clubs for the next rounds
+     * @param roundsOfType list of rounds from which clubs are registered
      */
-    private void registerTieClubsForLeagues(List<Round> roundsOfType) {
-        roundsOfType.forEach(round -> ((QRound) round).registerTieClubsForLeague());
+    private void registerClubsForLeagues(List<Round> roundsOfType) {
+        roundsOfType.forEach(round -> {
+            ((QRound) round).registerClubsForLeague();
+        });
     }
 
     /**
-     * Returns a string representation of the rounds.
+     * Returns a string representation of all rounds for logging and debugging
+     * purposes.
      *
-     * @return a string containing information about all rounds
+     * @return a string summarizing the rounds sequence in the simulation
      */
     @Override
     public String toString() {

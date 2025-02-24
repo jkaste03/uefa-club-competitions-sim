@@ -46,9 +46,18 @@ public abstract class Tie extends ClubSlot {
         return new int[] { club1Goals, club2Goals };
     }
 
+    public void updateClubSlotsIfTie() {
+        if (clubSlot1 instanceof DoubleLeggedTieWrapper) {
+            clubSlot1 = ((DoubleLeggedTieWrapper) clubSlot1).getCorrectClub();
+        }
+        if (clubSlot2 instanceof DoubleLeggedTieWrapper) {
+            clubSlot2 = ((DoubleLeggedTieWrapper) clubSlot2).getCorrectClub();
+        }
+    }
+
     @Override
     public String toString() {
-        return "Tie [clubSlot1=" + clubSlot1 + ", clubSlot2=" + clubSlot2 + ", winner=" + winner + ", club1Goals="
-                + club1Goals + ", club2Goals=" + club2Goals + "]";
+        return "Tie [clubSlot1=" + clubSlot1 + ", clubSlot2=" + clubSlot2 + ", winner=" + winner.getName()
+                + ", club1Goals=" + club1Goals + ", club2Goals=" + club2Goals + "]";
     }
 }
