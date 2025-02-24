@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.example.clubs.ClubSlot;
 import com.example.enums.Country;
+import com.github.rounds.QRound;
 
 package com.example.rounds;
 
