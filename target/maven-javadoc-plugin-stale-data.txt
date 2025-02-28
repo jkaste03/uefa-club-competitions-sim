@@ -1,0 +1,51 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+-classpath
+'C:/Users/johan/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.18.2/jackson-databind-2.18.2.jar;C:/Users/johan/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar;C:/Users/johan/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.18.2/jackson-core-2.18.2.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'17'
+-sourcepath
+'C:/Users/johan/Documents/fotball/uefa_cc_sim/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/johan/Documents/fotball/uefa_cc_sim/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'uefa_cc_sim 1.0-SNAPSHOT API'
+-use
+-version
+-windowtitle
+'uefa_cc_sim 1.0-SNAPSHOT API'
+com.github.jkaste03.uefa_cc_sim.enums
+com.github.jkaste03.uefa_cc_sim.model
+com.github.jkaste03.uefa_cc_sim.service
+com.github.jkaste03.uefa_cc_sim
+C:\Users\johan\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.18.2\jackson-databind-2.18.2.jar = 1738424094500
+C:\Users\johan\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.18.2\jackson-annotations-2.18.2.jar = 1738424094641
+C:\Users\johan\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.18.2\jackson-core-2.18.2.jar = 1738424094757
+C:\Users\johan\Documents\fotball\uefa_cc_sim\src\main\java = 1740411138721
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\allclasses-index.html = 1740594591171
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\allpackages-index.html = 1740594591176
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\element-list = 1740594590685
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\help-doc.html = 1740594591254
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\index-all.html = 1740594591238
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\index.html = 1740594591125
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\javadoc.bat = 1740593501483
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\member-search-index.js = 1740594591191
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\module-search-index.js = 1740594591180
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\overview-summary.html = 1740594591245
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\overview-tree.html = 1740594591118
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\package-search-index.js = 1740594591184
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\search.html = 1740594591242
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\tag-search-index.js = 1740594591193
+C:\Users\johan\Documents\fotball\uefa_cc_sim\target\reports\apidocs\type-search-index.js = 1740594591187

@@ -1,6 +1,6 @@
 package com.github.jkaste03.uefa_cc_sim;
 
-import com.github.jkaste03.uefa_cc_sim.rounds.Rounds;
+import com.github.jkaste03.uefa_cc_sim.model.Rounds;
 
 public class UefaCCSim {
     public static void main(String[] args) {
