@@ -13,13 +13,13 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * are determined for various club slot types.
  */
 public abstract class ClubSlot {
-
     /*
-     * Retrieves the relevant ranking for the club slot.
-     * In cases where the club slot represents a tie (involving multiple clubs),
-     * only the ranking of the club that determines the seeding is considered.
+     * Retrieves the name associated with this club slot.
+     * For individual clubs, this returns the club's name.
+     * In the case where the slot represents a tie (involving multiple clubs),
+     * a composite name (e.g. "club1 vs club2") is returned.
      */
-    public abstract float getApplicableRanking();
+    public abstract String getName();
 
     /*
      * Retrieves the list of countries associated with this club slot.
@@ -29,10 +29,9 @@ public abstract class ClubSlot {
     public abstract List<Country> getCountries();
 
     /*
-     * Retrieves the name associated with this club slot.
-     * For individual clubs, this returns the club's name.
-     * In the case where the slot represents a tie (involving multiple clubs),
-     * a composite name (e.g. "club1 vs club2") is returned.
+     * Retrieves the relevant ranking for the club slot.
+     * In cases where the club slot represents a tie (involving multiple clubs),
+     * only the ranking of the club that determines the seeding is considered.
      */
-    public abstract String getName();
+    public abstract float getRanking();
 }

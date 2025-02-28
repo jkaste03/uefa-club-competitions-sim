@@ -7,7 +7,6 @@ package com.github.jkaste03.uefa_cc_sim.model;
  * such as participating clubs, score calculations, and determining the winner.
  * Implementing classes should specify the details for the specific tie
  * format.
- * </p>
  */
 public abstract class Tie extends ClubSlot {
     protected ClubSlot clubSlot1;
@@ -56,24 +55,14 @@ public abstract class Tie extends ClubSlot {
      * <p>
      * Implementing methods should perform the match, update the results,
      * and set the winner based on the match outcome.
-     * </p>
      */
     public abstract void play();
-
-    /**
-     * Returns the name of the match, usually a combination of the names
-     * of the participating clubs.
-     *
-     * @return the match name
-     */
-    public abstract String getName();
 
     /**
      * Generates a random scoreline for the match.
      * <p>
      * The method simulates goal scoring by generating random integers between 0 and
      * 3 for each club.
-     * </p>
      *
      * @return an array where the first element is the goals for club 1 and the
      *         second element is the goals for club 2.
@@ -90,7 +79,6 @@ public abstract class Tie extends ClubSlot {
      * If a club slot is an instance of a DoubleLeggedTieWrapper,
      * it retrieves the appropriate underlying club slot (tie winner or loser) for
      * further use.
-     * </p>
      */
     public void updateClubSlotsIfTie() {
         if (clubSlot1 instanceof DoubleLeggedTieWrapper) {

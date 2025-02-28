@@ -68,7 +68,7 @@ public class QRound extends Round {
             updateClubSlotsIfHasOldWinner(); // Only to avoid incorrect printing of clubs that have skipped a round
         }
 
-        clubSlots.sort((c1, c2) -> Float.compare(c1.getApplicableRanking(), c2.getApplicableRanking()));
+        clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
         int halfSize = clubSlots.size() / 2;
 
         seededClubSlots = clubSlots.subList(0, halfSize);
@@ -82,7 +82,7 @@ public class QRound extends Round {
     private void updateClubSlotsIfHasOldWinner() {
         clubSlots = clubSlots.stream()
                 .map(clubSlot -> clubSlot instanceof DoubleLeggedTieWrapper ? Optional
-                        .ofNullable(((DoubleLeggedTieWrapper) clubSlot).getDLTie().getWinner()).orElse(clubSlot)
+                        .ofNullable(((DoubleLeggedTieWrapper) clubSlot).getTie().getWinner()).orElse(clubSlot)
                         : clubSlot)
                 .collect(Collectors.toList());
     }

@@ -48,7 +48,7 @@ public class ClubIdWrapper extends ClubSlot {
      * @return the ranking of the club.
      */
     @Override
-    public float getApplicableRanking() {
+    public float getRanking() {
         return getClub(id).getRanking();
     }
 

@@ -12,7 +12,7 @@ public class SingleLeggedTie extends Tie {
     }
 
     @Override
-    public float getApplicableRanking() {
+    public float getRanking() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getRanking'");
     }

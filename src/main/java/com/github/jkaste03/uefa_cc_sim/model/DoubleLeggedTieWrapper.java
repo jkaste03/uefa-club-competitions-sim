@@ -12,10 +12,9 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * name, ranking, and associated countries) to the underlying DoubleLeggedTie.
  * It provides a convenient abstraction to access a tie's properties while also
  * having a flag that indicates which ranking should be used for seeding.
- * </p>
  */
 public class DoubleLeggedTieWrapper extends ClubSlot {
-    private DoubleLeggedTie dLTie;
+    private DoubleLeggedTie tie;
     private boolean worstRankForSeeding;
 
     /**
@@ -27,16 +26,16 @@ public class DoubleLeggedTieWrapper extends ClubSlot {
      *                            be used for seeding.
      */
     public DoubleLeggedTieWrapper(DoubleLeggedTie tie, boolean worstRankForSeeding) {
-        this.dLTie = tie;
+        this.tie = tie;
         this.worstRankForSeeding = worstRankForSeeding;
     }
 
-    public Tie getDLTie() {
-        return dLTie;
+    public Tie getTie() {
+        return tie;
     }
 
-    public void setDLTie(DoubleLeggedTie dLTie) {
-        this.dLTie = dLTie;
+    public void setTie(DoubleLeggedTie tie) {
+        this.tie = tie;
     }
 
     public boolean isWorstRankForSeeding() {
@@ -55,29 +54,7 @@ public class DoubleLeggedTieWrapper extends ClubSlot {
      */
     @Override
     public String getName() {
-        return dLTie.getName() + (worstRankForSeeding ? " (loser of)" : " (winner of)");
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Returns the ranking of the club from the tie that determines the seeding.
-     */
-    @Override
-    public float getApplicableRanking() {
-        return dLTie.getRanking(worstRankForSeeding);
-    }
-
-    /**
-     * Returns the appropriate ClubSlot based on the seeding criteria.
-     * <p>
-     * If {@code worstRankForSeeding} is {@code true}, this method returns the loser
-     * of the tie; otherwise, it returns the winner.
-     *
-     * @return the ClubSlot representing the correct club for seeding.
-     */
-    public ClubSlot getCorrectClub() {
-        return worstRankForSeeding ? dLTie.getLoser() : dLTie.getWinner();
+        return tie.getName() + (worstRankForSeeding ? " (loser of)" : " (winner of)");
     }
 
     /**
@@ -90,11 +67,33 @@ public class DoubleLeggedTieWrapper extends ClubSlot {
      */
     @Override
     public List<Country> getCountries() {
-        return dLTie.getCountries();
+        return tie.getCountries();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Returns the ranking of the club from the tie that determines the seeding.
+     */
+    @Override
+    public float getRanking() {
+        return tie.getRanking(worstRankForSeeding);
+    }
+
+    /**
+     * Returns the appropriate ClubSlot based on the seeding criteria.
+     * <p>
+     * If {@code worstRankForSeeding} is {@code true}, this method returns the loser
+     * of the tie; otherwise, it returns the winner.
+     *
+     * @return the ClubSlot representing the correct club for seeding.
+     */
+    public ClubSlot getCorrectClub() {
+        return worstRankForSeeding ? tie.getLoser() : tie.getWinner();
     }
 
     @Override
     public String toString() {
-        return "DoubleLeggedTieWrapper [dLTie=" + dLTie + ", worstRankForSeeding=" + worstRankForSeeding + "]";
+        return "DoubleLeggedTieWrapper [dLTie=" + tie + ", worstRankForSeeding=" + worstRankForSeeding + "]";
     }
 }

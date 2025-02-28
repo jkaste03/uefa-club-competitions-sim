@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.github.jkaste03.uefa_cc_sim"},{"l":"com.github.jkaste03.uefa_cc_sim.enums"},{"l":"com.github.jkaste03.uefa_cc_sim.model"},{"l":"com.github.jkaste03.uefa_cc_sim.service"}];updateSearchResults();
