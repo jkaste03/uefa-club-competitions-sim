@@ -10,6 +10,12 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * decided by the UEFA Executive Committee.
  */
 public class IllegalTies {
+    /**
+     * A set of illegal pairs of countries.
+     * <p>
+     * Each pair is represented as a set of two countries. The order of the
+     * countries in the set does not matter.
+     */
     private static final Set<Set<Country>> illegalPairs = Set.of(
             Set.of(Country.ARM, Country.AZE),
             Set.of(Country.GIB, Country.ESP),
@@ -32,6 +38,15 @@ public class IllegalTies {
         return illegalPairs.contains(pair);
     }
 
+    /**
+     * Checks if a match between two club slots is prohibited based on the involved
+     * countries.
+     *
+     * @param club1 the first club slot
+     * @param club2 the second club slot
+     * @return {@code true} if a match between the two club slots is prohibited,
+     *         {@code false} otherwise
+     */
     public static boolean isProhibited(ClubSlot club1, ClubSlot club2) {
         return club1.getCountries().stream()
                 .anyMatch(c1 -> club2.getCountries().stream()

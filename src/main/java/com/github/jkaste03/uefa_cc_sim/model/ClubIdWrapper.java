@@ -33,9 +33,27 @@ public class ClubIdWrapper extends ClubSlot {
         this.id = id;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Retrieves the name of the club associated with this wrapper.
+     */
     @Override
     public String getName() {
         return getClub(id).getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation returns a singleton list containing the country of
+     * the club retrieved from the {@link ClubRepository} repository.
+     *
+     * @return a list with the club's country.
+     */
+    @Override
+    public List<Country> getCountries() {
+        return List.of(getClub(id).getCountry());
     }
 
     /**
@@ -51,19 +69,6 @@ public class ClubIdWrapper extends ClubSlot {
     @Override
     public float getRanking() {
         return getClub(id).getRanking();
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * This implementation returns a singleton list containing the country of
-     * the club retrieved from the {@link ClubRepository} repository.
-     *
-     * @return a list with the club's country.
-     */
-    @Override
-    public List<Country> getCountries() {
-        return List.of(getClub(id).getCountry());
     }
 
     private Club getClub(int id) {

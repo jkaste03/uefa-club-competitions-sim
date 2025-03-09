@@ -1,11 +1,6 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.github.jkaste03.uefa_cc_sim.enums.Country;
 
 /**
  * Represents a double-legged tie between two clubs.
@@ -51,28 +46,6 @@ public class DoubleLeggedTie extends Tie {
 
             System.out.println(getScoreline());
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * This implementation retrieves the list of countries associated with the
-     * clubs in the underlying double-legged tie.
-     *
-     * @return a list of the countries associated with the clubs in the tie.
-     */
-    @Override
-    public List<Country> getCountries() {
-        return Stream.concat(
-                clubSlot1.getCountries().stream(),
-                clubSlot2.getCountries().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public float getRanking() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRanking'");
     }
 
     /**

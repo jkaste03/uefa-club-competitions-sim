@@ -41,6 +41,8 @@ public class QRound extends Round {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Returns a string representation of the qualifying round, including the
      * tournament, round type, and path type.
      */
@@ -204,6 +206,8 @@ public class QRound extends Round {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Plays the ties in the qualifying round.
      */
     @Override

@@ -21,6 +21,8 @@ public class LeaguePhaseRound extends Round {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Returns a string representation of the qualifying round, including the
      * tournament and round type.
      */
@@ -30,6 +32,8 @@ public class LeaguePhaseRound extends Round {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Plays the league phase round.
      * This method is currently not implemented and will throw an
      * UnsupportedOperationException.

@@ -1,5 +1,11 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.github.jkaste03.uefa_cc_sim.enums.Country;
+
 /**
  * Abstract representation of a tie between two clubs.
  * <p>
@@ -51,6 +57,8 @@ public abstract class Tie extends ClubSlot {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Returns the name of the tie.
      * <p>
      * This implementation returns a string in the format "club1 vs club2",
@@ -61,6 +69,28 @@ public abstract class Tie extends ClubSlot {
     @Override
     public String getName() {
         return clubSlot1.getName() + " vs " + clubSlot2.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation retrieves the list of countries associated with the
+     * clubs in the underlying double-legged tie.
+     *
+     * @return a list of the countries associated with the clubs in the tie.
+     */
+    @Override
+    public List<Country> getCountries() {
+        return Stream.concat(
+                clubSlot1.getCountries().stream(),
+                clubSlot2.getCountries().stream())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public float getRanking() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getRanking'");
     }
 
     /**
