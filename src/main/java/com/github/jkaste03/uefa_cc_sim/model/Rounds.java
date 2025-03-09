@@ -117,6 +117,8 @@ public class Rounds {
     public void run() {
         // Start by processing the qualifying rounds.
         runQRounds();
+        // Proceed to the league phase rounds.
+        runLeagueRounds();
     }
 
     /**
@@ -166,7 +168,7 @@ public class Rounds {
     private void seedDrawQRounds(List<Round> roundsOfType) {
         if (roundsOfType.get(0) instanceof QRound) {
             roundsOfType.forEach(round -> {
-                ((QRound) round).seedDraw();
+                round.seedDraw();
             });
         }
     }
@@ -218,6 +220,13 @@ public class Rounds {
         roundsOfType.forEach(round -> {
             ((QRound) round).registerClubsForLeague();
         });
+    }
+
+    private void runLeagueRounds() {
+        // Execute seeding and draws for league phase rounds.
+        // seedDrawLeagueRounds();
+        // Play the league phase rounds.
+        // playRounds(getRoundsOfType(RoundType.LEAGUE_PHASE));
     }
 
     /**

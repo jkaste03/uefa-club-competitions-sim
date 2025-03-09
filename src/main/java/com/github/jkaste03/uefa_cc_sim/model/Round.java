@@ -90,7 +90,7 @@ public abstract class Round {
      * @param clubSlot2 the second club slot.
      * @return true if the tie is illegal, false otherwise.
      */
-    protected boolean isIllegalTie(ClubSlot clubSlot1, ClubSlot clubSlot2) {
+    protected static boolean isIllegalTie(ClubSlot clubSlot1, ClubSlot clubSlot2) {
         if (!hasCommonCountry(clubSlot1, clubSlot2)) {
             return IllegalTies.isProhibited(clubSlot1, clubSlot2);
         }
@@ -104,7 +104,7 @@ public abstract class Round {
      * @param clubSlot2 the second club slot.
      * @return true if they share at least one common country, false otherwise.
      */
-    private boolean hasCommonCountry(ClubSlot clubSlot1, ClubSlot clubSlot2) {
+    private static boolean hasCommonCountry(ClubSlot clubSlot1, ClubSlot clubSlot2) {
         return clubSlot1.getCountries().stream().anyMatch(clubSlot2.getCountries()::contains);
     }
 
@@ -114,7 +114,7 @@ public abstract class Round {
      * @param clubSlotList the list of ClubSlot objects whose names are to be
      *                     printed
      */
-    protected void printClubSlotList(List<ClubSlot> clubSlotList) {
+    protected static void printClubSlotList(List<ClubSlot> clubSlotList) {
         clubSlotList.forEach(clubSlot -> System.out.println(clubSlot.getName()));
     }
 
@@ -133,6 +133,32 @@ public abstract class Round {
             tie.updateClubSlotsIfTie();
         }
     }
+
+    /**
+     * Seeds and draw the ties.
+     */
+    public void seedDraw() {
+        seed();
+        draw();
+    }
+
+    /**
+     * Seeds the clubs for the round.
+     * <p>
+     * This method is responsible for seeding the clubs in the round. The specific
+     * implementation may vary depending on the type of round (e.g., qualifying,
+     * league phase).
+     */
+    protected abstract void seed();
+
+    /**
+     * Draws the ties for the round.
+     * <p>
+     * This method is responsible for drawing the ties for the round. The specific
+     * implementation may vary depending on the type of round (e.g., qualifying,
+     * league phase).
+     */
+    protected abstract void draw();
 
     /**
      * Plays the round.

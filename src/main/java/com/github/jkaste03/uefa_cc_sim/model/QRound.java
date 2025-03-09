@@ -52,18 +52,13 @@ public class QRound extends Round {
     }
 
     /**
-     * Seeds and draw ties if the list of ties is empty.
-     */
-    public void seedDraw() {
-        seed();
-        draw();
-    }
-
-    /**
+     * {@inheritDoc}
+     * <p>
      * Seeds the clubSlots in the qualifying round.
      * Throws an IllegalArgumentException if the number of clubSlots is odd.
      */
-    private void seed() {
+    @Override
+    public void seed() {
         if (clubSlots == null || clubSlots.size() % 2 != 0) {
             throw new IllegalArgumentException("The number of clubSlots must be even to seed them properly.");
         }
@@ -98,13 +93,16 @@ public class QRound extends Round {
     }
 
     /**
+     * {@inheritDoc}
+     * <p>
      * Draws the ties for the qualifying round.
      * Ensures that clubs from the same country do not meet.
      * First, it pairs seeded clubs that have at least one club from the same
      * country among the unseeded.
      * Then, it pairs the remaining seeded clubs with the remaining unseeded clubs.
      */
-    private void draw() {
+    @Override
+    public void draw() {
         List<ClubSlot> remainingSeeded = new ArrayList<>(seededClubSlots);
         List<ClubSlot> remainingUnseeded = new ArrayList<>(unseededClubSlots);
         ties.clear();

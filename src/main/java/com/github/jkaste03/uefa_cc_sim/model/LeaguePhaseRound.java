@@ -31,6 +31,18 @@ public class LeaguePhaseRound extends Round {
         return super.getName() + " " + CompetitionData.RoundType.LEAGUE_PHASE;
     }
 
+    @Override
+    protected void seed() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'seed'");
+    }
+
+    @Override
+    protected void draw() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'draw'");
+    }
+
     /**
      * {@inheritDoc}
      * <p>
