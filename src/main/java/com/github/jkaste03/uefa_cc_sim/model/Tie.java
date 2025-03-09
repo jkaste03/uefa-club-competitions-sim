@@ -51,6 +51,19 @@ public abstract class Tie extends ClubSlot {
     }
 
     /**
+     * Returns the name of the tie.
+     * <p>
+     * This implementation returns a string in the format "club1 vs club2",
+     * where "club1" and "club2" are the names of the participating clubs.
+     *
+     * @return the name of the tie.
+     */
+    @Override
+    public String getName() {
+        return clubSlot1.getName() + " vs " + clubSlot2.getName();
+    }
+
+    /**
      * Simulates the match.
      * <p>
      * Implementing methods should perform the match, update the results,

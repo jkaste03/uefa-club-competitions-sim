@@ -54,19 +54,6 @@ public class DoubleLeggedTie extends Tie {
     }
 
     /**
-     * Returns the name of the tie.
-     * <p>
-     * This implementation returns a string in the format "club1 vs club2",
-     * where "club1" and "club2" are the names of the participating clubs.
-     *
-     * @return the name of the tie.
-     */
-    @Override
-    public String getName() {
-        return clubSlot1.getName() + " vs " + clubSlot2.getName();
-    }
-
-    /**
      * {@inheritDoc}
      * <p>
      * This implementation retrieves the list of countries associated with the

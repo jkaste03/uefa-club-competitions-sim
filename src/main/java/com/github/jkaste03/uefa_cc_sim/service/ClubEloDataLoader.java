@@ -6,6 +6,8 @@ import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.*;
 
+import com.github.jkaste03.uefa_cc_sim.model.ClubRepository;
+
 /**
  * ClubEloService provides functionality to retrieve and manage Elo ratings for
  * football clubs.
@@ -16,10 +18,10 @@ import java.util.*;
  * fetched from external
  * data sources or local caches depending on the implementation.
  * <p>
- * Usage example:
+ * Usage example for retrieving the Elo rating of the club with id 32:
  * 
  * <pre>
- * double eloRating = ClubEloService.getEloRating("FC Example");
+ * double eloRating = ClubEloService.getEloRating(32);
  * </pre>
  * <p>
  * If a club's Elo rating is not found, the service returns 0.0 by default.
@@ -27,23 +29,19 @@ import java.util.*;
 public class ClubEloDataLoader {
     private static final String BASE_URL = "http://api.clubelo.com/";
     private static final String DATA_FOLDER = "src/main/java/com/github/jkaste03/uefa_cc_sim/data/";
-    private static final Map<String, Double> eloMap = new HashMap<>();
-    private static String filePath;
+    private static String filePath = DATA_FOLDER + LocalDate.now() + ".csv";
+    private final Map<Integer, Double> eloMap = new HashMap<>();
 
     /**
-     * Constructor that initializes the ClubEloAPI by downloading the latest data if
-     * not already present and loading Elo ratings.
+     * Initializes the Elo ratings by downloading the latest data if not already
+     * present.
      */
-    public ClubEloDataLoader() {
-        LocalDate today = LocalDate.now();
-        filePath = DATA_FOLDER + today + ".csv";
-
+    public void init() {
         // Download file if it does not exist
         if (!Files.exists(Path.of(filePath))) {
             deleteExistingCSVFiles();
-            downloadCSV(today);
+            downloadCSV(LocalDate.now());
         }
-
         loadEloRatings();
     }
 
@@ -87,10 +85,11 @@ public class ClubEloDataLoader {
                 String[] values = line.split(",");
                 if (values.length < 5)
                     continue;
-                String club = values[1].trim();
+                String clubName = values[1].trim();
+                int clubid = ClubRepository.getIdByName(clubName);
                 double elo = Double.parseDouble(values[4].trim());
 
-                eloMap.put(club, elo);
+                eloMap.put(clubid, elo);
             }
         } catch (IOException e) {
             System.err.println("Could not read API data: " + e.getMessage());
@@ -98,12 +97,22 @@ public class ClubEloDataLoader {
     }
 
     /**
-     * Retrieves the Elo rating for the specified club.
+     * Retrieves the Elo rating for the specified club id.
      *
-     * @param clubName the name of the club whose Elo rating is requested
+     * @param clubId the id of the club whose Elo rating is requested
      * @return the Elo rating for the club if available, or 0.0 if not found
      */
-    public static double getEloRating(String clubName) {
-        return eloMap.getOrDefault(clubName, 0.0);
+    public double getEloRating(int clubId) {
+        return eloMap.getOrDefault(clubId, 0.0);
+    }
+
+    /**
+     * Sets the Elo rating for a specified club id.
+     * 
+     * @param clubId
+     * @param elo
+     */
+    public void setEloRating(int clubId, double elo) {
+        eloMap.put(clubId, elo);
     }
 }

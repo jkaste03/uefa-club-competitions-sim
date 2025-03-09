@@ -42,7 +42,8 @@ public class ClubIdWrapper extends ClubSlot {
      * {@inheritDoc}
      * <p>
      * This implementation retrieves the club corresponding to the stored id from
-     * the {@link Clubs} repository and returns its ranking. The term "applicable"
+     * the {@link ClubRepository} repository and returns its ranking. The term
+     * "applicable"
      * is not relevant in this subclass implementation.
      *
      * @return the ranking of the club.
@@ -56,7 +57,7 @@ public class ClubIdWrapper extends ClubSlot {
      * {@inheritDoc}
      * <p>
      * This implementation returns a singleton list containing the country of
-     * the club retrieved from the {@link Clubs} repository.
+     * the club retrieved from the {@link ClubRepository} repository.
      *
      * @return a list with the club's country.
      */
@@ -66,7 +67,7 @@ public class ClubIdWrapper extends ClubSlot {
     }
 
     private Club getClub(int id) {
-        return Clubs.getClub(id);
+        return ClubRepository.getClub(id);
     }
 
     @Override

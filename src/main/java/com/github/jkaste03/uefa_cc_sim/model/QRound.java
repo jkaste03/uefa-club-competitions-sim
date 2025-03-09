@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData.Tournament;
+import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Collections;
  * Class representing a qualifying round in the UEFA competitions.
  */
 public class QRound extends Round {
+    // Constants for clubs skipping a round (e.g., UCL Q1 CP to UECL Q3 CP)
     private final static int UCL_Q1_CP_TIES_NO_REBALANCE = 16;
     private final static String ROUND_CLUBS_SKIP_TO = Tournament.CONFERENCE_LEAGUE + " " + CompetitionData.RoundType.Q3
             + " " + CompetitionData.PathType.CHAMPIONS_PATH;
@@ -36,23 +38,23 @@ public class QRound extends Round {
             CompetitionData.PathType pathType) {
         super(tournament, roundType);
         this.pathType = pathType;
-        addClubsFromJson();
-    }
-
-    @Override
-    public String getName() {
-        return super.getName() + " " + pathType;
     }
 
     /**
-     * Runs the qualifying round by seeding clubs, drawing ties, and playing the
-     * ties.
+     * Returns a string representation of the qualifying round, including the
+     * tournament, round type, and path type.
      */
-    public void trySeedDraw() {
-        if (ties.isEmpty()) {
-            seed();
-            draw();
-        }
+    @Override
+    public String getName() {
+        return super.getName() + " " + roundType + " " + pathType;
+    }
+
+    /**
+     * Seeds and draw ties if the list of ties is empty.
+     */
+    public void seedDraw() {
+        seed();
+        draw();
     }
 
     /**
@@ -64,7 +66,8 @@ public class QRound extends Round {
             throw new IllegalArgumentException("The number of clubSlots must be even to seed them properly.");
         }
 
-        if (getName().equals(ROUND_CLUBS_SKIP_TO)) {
+        if (getName().equals(ROUND_CLUBS_SKIP_TO)) { // Todo: make this false if UCLQ1CP's clubSlots.length ==
+                                                     // UCL_Q1_CP_TIES_NO_REBALANCE;
             updateClubSlotsIfHasOldWinner(); // Only to avoid incorrect printing of clubs that have skipped a round
         }
 
@@ -79,6 +82,11 @@ public class QRound extends Round {
         printClubSlotList(unseededClubSlots);
     }
 
+    /**
+     * Updates clubSlots by replacing DoubleLeggedTieWrapper instances with their
+     * winners, if available. This is only to avoid incorrect printing of clubs that
+     * have skipped a round
+     */
     private void updateClubSlotsIfHasOldWinner() {
         clubSlots = clubSlots.stream()
                 .map(clubSlot -> clubSlot instanceof DoubleLeggedTieWrapper ? Optional
@@ -125,36 +133,67 @@ public class QRound extends Round {
         ties.forEach(tie -> System.out.println(tie.getName()));
     }
 
+    /**
+     * Registers ties for the next rounds.
+     * <p>
+     * If there are clubs that must skip the secondary round, the ties are shuffled
+     * to randomize which ties get to skip. Then, ties are added to the next primary
+     * round and, if applicable, to the next secondary round.
+     * </p>
+     * <p>
+     * For each tie:
+     * <ul>
+     * <li>The tie is added to the next primary round.</li>
+     * <li>If the next secondary round is applicable:
+     * <ul>
+     * <li>If the tie can skip the secondary round, it is added to the next primary
+     * round of the secondary round.</li>
+     * <li>Otherwise, it is added to the secondary round.</li>
+     * </ul>
+     * </li>
+     * </ul>
+     * </p>
+     */
     public void regTiesForNextRounds() {
-        shuffleTiesIfUCLQ1CP();
-        for (int i = 0; i < ties.size(); i++) {
-            this.nextPrimaryRnd.addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) ties.get(i), false));
-            if (this.nextSecondaryRnd != null) {
-                if (tieCanSkipSecondaryRound(i)) {
-                    this.nextSecondaryRnd.getNextPrimaryRnd()
-                            .addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) ties.get(i), true));
-                } else {
-                    this.nextSecondaryRnd.addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) ties.get(i), true));
-                }
-            }
-        }
-    }
-
-    private void shuffleTiesIfUCLQ1CP() {
-        if (ifUCLQ1CP()) {
+        // If ties must skip the secondary round, shuffle the ties to randomize which
+        // ties get to skip
+        int noOfClubsToSkipSecondary = noOfClubsCanSkipSecondary();
+        if (noOfClubsToSkipSecondary > 0) {
             Collections.shuffle(ties);
         }
+        // Add ties to the next primary round and the next secondary round if applicable
+        ties.forEach(tie -> {
+            // Add tie to the next primary round
+            this.nextPrimaryRnd.addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) tie, false));
+            // Add tie to the next secondary round if applicable
+            if (this.nextSecondaryRnd != null) {
+                // Add tie to the next primary round of the secondary round if it can skip,
+                // otherwise add to the secondary round
+                if (ties.indexOf(tie) < noOfClubsToSkipSecondary) {
+                    this.nextSecondaryRnd.nextPrimaryRnd
+                            .addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) tie, true));
+                } else {
+                    this.nextSecondaryRnd.addClubSlot(new DoubleLeggedTieWrapper((DoubleLeggedTie) tie, true));
+                }
+            }
+        });
     }
 
-    private boolean ifUCLQ1CP() {
-        return (tournament == CompetitionData.Tournament.CHAMPIONS_LEAGUE && roundType == CompetitionData.RoundType.Q1
-                && pathType == CompetitionData.PathType.CHAMPIONS_PATH);
+    /**
+     * Determines the number of clubs that can skip the secondary round.
+     * 
+     * @return the number of clubs that can skip the secondary round.
+     */
+    private int noOfClubsCanSkipSecondary() {
+        int noOfClubsToSkip = (tournament == CompetitionData.Tournament.CHAMPIONS_LEAGUE
+                && roundType == CompetitionData.RoundType.Q1
+                && pathType == CompetitionData.PathType.CHAMPIONS_PATH) ? UCL_Q1_CP_TIES_NO_REBALANCE - ties.size() : 0;
+        return noOfClubsToSkip;
     }
 
-    private boolean tieCanSkipSecondaryRound(int i) {
-        return ifUCLQ1CP() && i < UCL_Q1_CP_TIES_NO_REBALANCE - ties.size();
-    }
-
+    /**
+     * Registers clubs for the league phase.
+     */
     public void registerClubsForLeague() {
         for (Tie tie : ties) {
             this.nextPrimaryRnd.addClubSlot(tie.getWinner());
@@ -168,11 +207,12 @@ public class QRound extends Round {
      * Plays the ties in the qualifying round.
      */
     @Override
-    public void play() {
+    public void play(ClubEloDataLoader clubEloDataLoader) {
         System.out.println("\n" + getName());
         for (Tie tie : ties) {
             tie.play();
         }
+        // Todo: Update the clubEloDataLoader with the new Elo ratings after the matches
     }
 
     @Override

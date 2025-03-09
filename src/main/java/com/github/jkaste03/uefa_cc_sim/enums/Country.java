@@ -1,5 +1,9 @@
 package com.github.jkaste03.uefa_cc_sim.enums;
 
+/**
+ * Enum representing various countries participating in UEFA competitions.
+ * Each enum constant is associated with the country's full name.
+ */
 public enum Country {
     ENG("England"),
     ITA("Italy"),
@@ -59,10 +63,20 @@ public enum Country {
 
     private final String countryName;
 
+    /**
+     * Constructor to initialize the enum constant with the country's full name.
+     *
+     * @param countryName the full name of the country
+     */
     Country(String countryName) {
         this.countryName = countryName;
     }
 
+    /**
+     * Gets the full name of the country.
+     *
+     * @return the full name of the country
+     */
     public String getCountryName() {
         return countryName;
     }

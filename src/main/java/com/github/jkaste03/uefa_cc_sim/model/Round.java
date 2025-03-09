@@ -2,13 +2,8 @@ package com.github.jkaste03.uefa_cc_sim.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
-import com.github.jkaste03.uefa_cc_sim.enums.Country;
-
-import java.io.File;
-import java.io.IOException;
+import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +29,7 @@ public abstract class Round {
     }
 
     public String getName() {
-        return tournament + " " + roundType;
+        return tournament + "";
     }
 
     public CompetitionData.Tournament getTournament() {
@@ -79,45 +74,6 @@ public abstract class Round {
     }
 
     /**
-     * Adds clubs to the round from a JSON file.
-     */
-    protected void addClubsFromJson() {
-        // Read the JSON file
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode;
-        try {
-            rootNode = mapper
-                    .readTree(new File("src/main/java/com/github/jkaste03/uefa_cc_sim/data/data.json"));
-
-            // Access the "rounds" object
-            JsonNode roundsNode = rootNode.path("rounds");
-
-            // Find the corresponding round in the JSON data
-            JsonNode roundNode = roundsNode.path(getName());
-            addClubsFromJsNode(roundNode);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Adds clubs to the round from a JSON node.
-     * 
-     * @param roundNode the JSON node containing the clubs.
-     */
-    private void addClubsFromJsNode(JsonNode roundNode) {
-        // Iterate through the clubs in this round
-        for (JsonNode clubNode : roundNode) {
-            String clubName = clubNode.path("name").asText();
-            Country country = Country.valueOf(clubNode.path("country").asText());
-            float ranking = (float) clubNode.path("ranking").asDouble();
-            Club club = new Club(clubName, country, ranking);
-            addClubSlot(new ClubIdWrapper(club.getId()));
-        }
-    }
-
-    /**
      * Adds a club slot to the round.
      * 
      * @param clubSlot the club slot to add.
@@ -127,34 +83,51 @@ public abstract class Round {
     }
 
     /**
-     * Checks if a tie between two clubs is illegal based on political restrictions.
+     * Checks if a tie between two club slots is illegal based on political
+     * restrictions.
      * 
-     * @param club1 the first club.
-     * @param club2 the second club.
+     * @param clubSlot1 the first club slot.
+     * @param clubSlot2 the second club slot.
      * @return true if the tie is illegal, false otherwise.
      */
-    protected boolean isIllegalTie(ClubSlot club1, ClubSlot club2) {
-        if (!hasCommonCountry(club1, club2)) {
-            return IllegalTies.isProhibited(club1, club2);
+    protected boolean isIllegalTie(ClubSlot clubSlot1, ClubSlot clubSlot2) {
+        if (!hasCommonCountry(clubSlot1, clubSlot2)) {
+            return IllegalTies.isProhibited(clubSlot1, clubSlot2);
         }
         return false;
     }
 
     /**
-     * Checks if two clubs share at least one common country.
+     * Checks if two club slots share at least one common country.
      * 
-     * @param club1 the first club.
-     * @param club2 the second club.
+     * @param clubSlot1 the first club slot.
+     * @param clubSlot2 the second club slot.
      * @return true if they share at least one common country, false otherwise.
      */
-    private boolean hasCommonCountry(ClubSlot club1, ClubSlot club2) {
-        return club1.getCountries().stream().anyMatch(club2.getCountries()::contains);
+    private boolean hasCommonCountry(ClubSlot clubSlot1, ClubSlot clubSlot2) {
+        return clubSlot1.getCountries().stream().anyMatch(clubSlot2.getCountries()::contains);
     }
 
+    /**
+     * Prints the names of the clubs in the provided list of ClubSlot objects.
+     *
+     * @param clubSlotList the list of ClubSlot objects whose names are to be
+     *                     printed
+     */
     protected void printClubSlotList(List<ClubSlot> clubSlotList) {
         clubSlotList.forEach(clubSlot -> System.out.println(clubSlot.getName()));
     }
 
+    /**
+     * Updates the club slots in all ties.
+     * <p>
+     * This method iterates through all the ties and updates the participating
+     * club slots by calling the {@link Tie#updateClubSlotsIfTie()} method on each
+     * tie. The {@code updateClubSlotsIfTie} method ensures that if a club slot
+     * is a wrapper (such as an instance of {@code DoubleLeggedTieWrapper}), it
+     * retrieves the appropriate underlying club slot (tie winner or loser) for
+     * further use.
+     */
     public void updateClubSlotsInTies() {
         for (Tie tie : ties) {
             tie.updateClubSlotsIfTie();
@@ -164,7 +137,7 @@ public abstract class Round {
     /**
      * Plays the round.
      */
-    public abstract void play();
+    public abstract void play(ClubEloDataLoader clubEloDataLoader);
 
     @Override
     public String toString() {
