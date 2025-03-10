@@ -1,8 +1,6 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData.Tournament;
@@ -77,19 +75,6 @@ public class QRound extends Round {
         printClubSlotList(seededClubSlots);
         System.out.println("\n" + getName() + ", unseeded clubs:");
         printClubSlotList(unseededClubSlots);
-    }
-
-    /**
-     * Updates clubSlots by replacing DoubleLeggedTieWrapper instances with their
-     * winners, if available. This is only to avoid incorrect printing of clubs that
-     * have skipped a round
-     */
-    private void updateClubSlotsIfHasOldWinner() {
-        clubSlots = clubSlots.stream()
-                .map(clubSlot -> clubSlot instanceof DoubleLeggedTieWrapper ? Optional
-                        .ofNullable(((DoubleLeggedTieWrapper) clubSlot).getTie().getWinner()).orElse(clubSlot)
-                        : clubSlot)
-                .collect(Collectors.toList());
     }
 
     /**

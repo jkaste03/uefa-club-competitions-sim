@@ -41,7 +41,7 @@ public class Rounds {
         uclQ3LP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.Q3, PathType.LEAGUE_PATH);
         uclPoCP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.PLAYOFF, PathType.CHAMPIONS_PATH);
         uclPoLP = new QRound(Tournament.CHAMPIONS_LEAGUE, RoundType.PLAYOFF, PathType.LEAGUE_PATH);
-        uclLP = new LeaguePhaseRound(Tournament.CHAMPIONS_LEAGUE);
+        uclLP = new UclUelLeaguePhaseRound(Tournament.CHAMPIONS_LEAGUE);
 
         // Create instances for Europa League qualifier rounds.
         uelQ1MP = new QRound(Tournament.EUROPA_LEAGUE, RoundType.Q1, PathType.MAIN_PATH);
@@ -49,7 +49,7 @@ public class Rounds {
         uelQ3MP = new QRound(Tournament.EUROPA_LEAGUE, RoundType.Q3, PathType.MAIN_PATH);
         uelQ3CP = new QRound(Tournament.EUROPA_LEAGUE, RoundType.Q3, PathType.CHAMPIONS_PATH);
         uelPo = new QRound(Tournament.EUROPA_LEAGUE, RoundType.PLAYOFF, PathType.MAIN_PATH);
-        uelLP = new LeaguePhaseRound(Tournament.EUROPA_LEAGUE);
+        uelLP = new UclUelLeaguePhaseRound(Tournament.EUROPA_LEAGUE);
 
         // Create instances for Conference League qualifier rounds.
         ueclQ1MP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.Q1, PathType.MAIN_PATH);
@@ -59,7 +59,7 @@ public class Rounds {
         ueclQ3CP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.Q3, PathType.CHAMPIONS_PATH);
         ueclPoMP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.PLAYOFF, PathType.MAIN_PATH);
         ueclPoCP = new QRound(Tournament.CONFERENCE_LEAGUE, RoundType.PLAYOFF, PathType.CHAMPIONS_PATH);
-        ueclLP = new LeaguePhaseRound(Tournament.CONFERENCE_LEAGUE);
+        ueclLP = new UeclLeaguePhaseRound();
 
         // Aggregate all rounds into a list for streamlined processing.
         rounds = new ArrayList<>(
@@ -224,9 +224,17 @@ public class Rounds {
 
     private void runLeagueRounds() {
         // Execute seeding and draws for league phase rounds.
-        // seedDrawLeagueRounds();
+        seedDrawLeagueRounds();
         // Play the league phase rounds.
         // playRounds(getRoundsOfType(RoundType.LEAGUE_PHASE));
+    }
+
+    private void seedDrawLeagueRounds() {
+        // Extract all league phase rounds
+        List<Round> roundsOfType = getRoundsOfType(RoundType.LEAGUE_PHASE);
+        roundsOfType.forEach(round -> {
+            round.seedDraw();
+        });
     }
 
     /**

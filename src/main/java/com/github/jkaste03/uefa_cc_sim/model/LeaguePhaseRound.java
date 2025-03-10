@@ -1,5 +1,8 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
 import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
 
@@ -8,7 +11,8 @@ import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
  * This class handles the league phase rounds where clubs compete in a league
  * format.
  */
-public class LeaguePhaseRound extends Round {
+public abstract class LeaguePhaseRound extends Round {
+    protected final List<List<ClubSlot>> pots;
 
     /**
      * Constructs a LeaguePhaseRound with the specified tournament.
@@ -18,6 +22,7 @@ public class LeaguePhaseRound extends Round {
      */
     public LeaguePhaseRound(CompetitionData.Tournament tournament) {
         super(tournament, CompetitionData.RoundType.LEAGUE_PHASE);
+        pots = new ArrayList<>();
     }
 
     /**
@@ -33,14 +38,16 @@ public class LeaguePhaseRound extends Round {
 
     @Override
     protected void seed() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'seed'");
+        clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
+        seedCoreLogic();
     }
+
+    protected abstract void seedCoreLogic();
 
     @Override
     protected void draw() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'draw'");
+        System.out.println("\n" + getName() + " draw:");
+        System.out.println("To be done!");
     }
 
     /**
