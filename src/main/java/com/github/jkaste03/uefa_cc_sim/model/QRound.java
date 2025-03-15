@@ -61,6 +61,7 @@ public class QRound extends Round {
             throw new IllegalArgumentException("The number of clubSlots must be even to seed them properly.");
         }
 
+        // If round that clubs has skipped to, fix the club slots for those clubs
         if (getName().equals(ROUND_CLUBS_SKIP_TO)) { // Todo: make this false if UCLQ1CP's clubSlots.length ==
                                                      // UCL_Q1_CP_TIES_NO_REBALANCE;
             updateClubSlotsIfClubHasSkipped(true); // Only to avoid incorrect printing of clubs that have skipped a

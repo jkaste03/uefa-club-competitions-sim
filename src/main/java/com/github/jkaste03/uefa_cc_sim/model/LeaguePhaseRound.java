@@ -2,7 +2,6 @@ package com.github.jkaste03.uefa_cc_sim.model;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
 import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
 
@@ -36,13 +35,15 @@ public abstract class LeaguePhaseRound extends Round {
         return super.getName() + " " + CompetitionData.RoundType.LEAGUE_PHASE;
     }
 
+    /**
+     * Seeds the league phase round.
+     */
     @Override
     protected abstract void seed();
 
     @Override
     protected void draw() {
-        System.out.println("\n" + getName() + " draw:");
-        System.out.println("To be done!");
+
     }
 
     /**
