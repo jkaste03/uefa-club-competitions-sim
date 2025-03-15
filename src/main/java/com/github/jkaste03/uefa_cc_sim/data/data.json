@@ -1,4 +1,5 @@
 {
+    "previous_champions_league_winner": "Real Madrid",
     "rounds": {
         "CHAMPIONS_LEAGUE Q1 CHAMPIONS_PATH": [
             {"name": "Steaua", "ranking": 149.0, "country": "ROM"},

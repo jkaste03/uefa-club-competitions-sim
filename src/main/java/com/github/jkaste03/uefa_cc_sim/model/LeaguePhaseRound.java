@@ -37,12 +37,7 @@ public abstract class LeaguePhaseRound extends Round {
     }
 
     @Override
-    protected void seed() {
-        clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
-        seedCoreLogic();
-    }
-
-    protected abstract void seedCoreLogic();
+    protected abstract void seed();
 
     @Override
     protected void draw() {

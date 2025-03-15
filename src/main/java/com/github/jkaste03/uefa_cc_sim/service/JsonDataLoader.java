@@ -20,7 +20,17 @@ import com.google.gson.JsonParser;
  */
 public class JsonDataLoader {
 
-    private static final String JSON_ROOT = "rounds";
+    /**
+     * The root key in the JSON file that contains the rounds data.
+     */
+    private static final String DATA_MAIN_ROOT = "rounds";
+    /**
+     * The key in the JSON file that contains the previous Champions League winner.
+     */
+    private static final String PREVIOUS_UCL_WINNER = "previous_champions_league_winner";
+    /**
+     * The path to the JSON data file.
+     */
     private static final String DATA_FILE = "src/main/java/com/github/jkaste03/uefa_cc_sim/data/data.json";
 
     /**
@@ -33,7 +43,7 @@ public class JsonDataLoader {
         try (Reader reader = new FileReader(DATA_FILE)) {
             JsonObject roundsData = JsonParser.parseReader(reader)
                     .getAsJsonObject()
-                    .getAsJsonObject(JSON_ROOT);
+                    .getAsJsonObject(DATA_MAIN_ROOT);
             for (Round round : rounds) {
                 JsonArray clubsJson = roundsData.getAsJsonArray(round.getName());
                 if (clubsJson == null)
@@ -47,6 +57,22 @@ public class JsonDataLoader {
                     round.addClubSlot(new ClubIdWrapper(club.getId()));
                 });
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Set the previous Champions League winner from the JSON data in
+        // ClubRepository.
+        setPreviousChampionsLeagueWinner();
+    }
+
+    /**
+     * Fetches the value of previous_champions_league_winner from the JSON data, and
+     * sets that club's ID as the last UCL winner ID in ClubRepository.
+     */
+    private static void setPreviousChampionsLeagueWinner() {
+        try (Reader reader = new FileReader(DATA_FILE)) {
+            JsonObject jsonData = JsonParser.parseReader(reader).getAsJsonObject();
+            ClubRepository.setLastUclWinnerName(jsonData.get(PREVIOUS_UCL_WINNER).getAsString());
         } catch (IOException e) {
             e.printStackTrace();
         }

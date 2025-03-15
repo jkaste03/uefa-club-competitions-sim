@@ -33,6 +33,10 @@ public class ClubIdWrapper extends ClubSlot {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     /**
      * {@inheritDoc}
      * <p>

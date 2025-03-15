@@ -13,10 +13,31 @@ import java.util.Map;
  * simulation data produced through the simulations is stored for all clubs.
  */
 public class ClubRepository {
+    /*
+     * The static map of clubs, where the key is the club's id and the value is the
+     * Club instance.
+     */
     private static Map<Integer, Club> clubs = new HashMap<>();
 
+    /*
+     * The name of the club that won the last UEFA Champions League. This is needed
+     * decide the UCL seeding pots.
+     */
+    public static String lastUclWinnerName;
+
+    /*
+     * Retrieves the club with the specified id from the static map of clubs.
+     */
     public static Club getClub(int id) {
         return clubs.get(id);
+    }
+
+    public static String getLastUclWinnerName() {
+        return lastUclWinnerName;
+    }
+
+    public static void setLastUclWinnerName(String name) {
+        lastUclWinnerName = name;
     }
 
     /*

@@ -21,10 +21,12 @@ public class UeclLeaguePhaseRound extends LeaguePhaseRound {
     }
 
     @Override
-    protected void seedCoreLogic() {
+    protected void seed() {
         if (clubSlots == null || clubSlots.size() % POT_COUNT != 0) {
             throw new IllegalArgumentException("The number of clubSlots must be even to seed them properly.");
         }
+
+        clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
 
         for (int i = 0; i < POT_COUNT; i++) {
             pots.add(clubSlots.subList(i * clubSlots.size() / POT_COUNT, (i + 1) * clubSlots.size() / POT_COUNT));
