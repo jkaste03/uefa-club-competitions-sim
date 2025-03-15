@@ -63,7 +63,8 @@ public class QRound extends Round {
 
         if (getName().equals(ROUND_CLUBS_SKIP_TO)) { // Todo: make this false if UCLQ1CP's clubSlots.length ==
                                                      // UCL_Q1_CP_TIES_NO_REBALANCE;
-            updateClubSlotsIfHasOldWinner(); // Only to avoid incorrect printing of clubs that have skipped a round
+            updateClubSlotsIfClubHasSkipped(true); // Only to avoid incorrect printing of clubs that have skipped a
+                                                   // round
         }
 
         clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));

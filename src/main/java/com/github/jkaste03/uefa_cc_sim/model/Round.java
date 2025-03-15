@@ -2,7 +2,6 @@ package com.github.jkaste03.uefa_cc_sim.model;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
 import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
@@ -163,16 +162,19 @@ public abstract class Round {
     protected abstract void draw();
 
     /**
-     * Updates clubSlots by replacing DoubleLeggedTieWrapper instances with their
-     * winners, if available. This is only to avoid incorrect printing of clubs that
-     * have skipped a round
+     * Updates club slots if a club has skipped a round. This avoids having a
+     * DoubleLeggedTieWrapper when a ClubIdWrapper is needed.
+     * If the club slot is a DoubleLeggedTieWrapper, it will be replaced with
+     * either the winner or the loser of the tie, based on the useWinner parameter.
+     * If the winner or loser is null, the original club slot is kept.
+     *
+     * @param useWinner true to use the winner, false to use the loser of the tie
      */
-    protected void updateClubSlotsIfHasOldWinner() {
-        clubSlots = clubSlots.stream()
-                .map(clubSlot -> clubSlot instanceof DoubleLeggedTieWrapper ? Optional
-                        .ofNullable(((DoubleLeggedTieWrapper) clubSlot).getTie().getWinner()).orElse(clubSlot)
-                        : clubSlot)
-                .collect(Collectors.toList());
+    protected void updateClubSlotsIfClubHasSkipped(boolean useWinner) {
+        clubSlots.replaceAll(clubSlot -> clubSlot instanceof DoubleLeggedTieWrapper wrapper
+                ? Optional.ofNullable(useWinner ? wrapper.getTie().getWinner() : wrapper.getTie().getLoser())
+                        .orElse(clubSlot)
+                : clubSlot);
     }
 
     /**

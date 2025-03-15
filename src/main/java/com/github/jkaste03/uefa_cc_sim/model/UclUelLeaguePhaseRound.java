@@ -34,7 +34,7 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
         }
 
         if (getName().equals(ROUND_CLUBS_SKIP_TO)) {
-            updateClubSlotsIfHasOldWinner(); // Only to avoid incorrect printing of clubs that have skipped a round
+            updateClubSlotsIfClubHasSkipped(false); // Prevent skipped clubs from being DoubleLeggedTieWrapper
         }
 
         clubSlots.sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
