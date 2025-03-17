@@ -73,9 +73,9 @@ public class QRound extends Round {
 
         seededClubSlots = clubSlots.subList(0, halfSize);
         unseededClubSlots = clubSlots.subList(halfSize, clubSlots.size());
-        System.out.println("\n" + getName() + ", seeded clubs:");
+        // System.out.println("\n" + getName() + ", seeded clubs:");
         printClubSlotList(seededClubSlots);
-        System.out.println("\n" + getName() + ", unseeded clubs:");
+        // System.out.println("\n" + getName() + ", unseeded clubs:");
         printClubSlotList(unseededClubSlots);
     }
 
@@ -116,8 +116,8 @@ public class QRound extends Round {
                     : new DoubleLeggedTie(opponent, seeded));
         });
 
-        System.out.println("\n" + getName() + ", ties:");
-        ties.forEach(tie -> System.out.println(tie.getName()));
+        // System.out.println("\n" + getName() + ", ties:");
+        // ties.forEach(tie -> System.out.println(tie.getName()));
     }
 
     /**
@@ -197,7 +197,7 @@ public class QRound extends Round {
      */
     @Override
     public void play(ClubEloDataLoader clubEloDataLoader) {
-        System.out.println("\n" + getName());
+        // System.out.println("\n" + getName());
         for (Tie tie : ties) {
             tie.play();
         }

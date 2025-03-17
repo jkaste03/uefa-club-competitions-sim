@@ -53,7 +53,7 @@ public class ClubEloDataLoader {
             for (Path entry : stream) {
                 Files.delete(entry);
             }
-            System.out.println("Deleted old API data");
+            // System.out.println("Deleted old API data");
         } catch (IOException e) {
             System.err.println("Could not delete existing CSV files: " + e.getMessage());
         }
@@ -69,7 +69,7 @@ public class ClubEloDataLoader {
         try (InputStream in = new URI(urlString).toURL().openStream()) {
             Files.createDirectories(Path.of(DATA_FOLDER));
             Files.copy(in, Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Downloaded API data for " + date);
+            // System.out.println("Downloaded API data for " + date);
         } catch (Exception e) {
             System.err.println("Could not download API data from " + urlString + ": " + e.getMessage());
         }

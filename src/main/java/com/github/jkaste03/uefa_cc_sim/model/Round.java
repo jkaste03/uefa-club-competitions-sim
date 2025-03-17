@@ -116,7 +116,7 @@ public abstract class Round {
      *                     printed
      */
     protected static void printClubSlotList(List<ClubSlot> clubSlotList) {
-        clubSlotList.forEach(clubSlot -> System.out.println(clubSlot.getName()));
+        // clubSlotList.forEach(clubSlot -> System.out.println(clubSlot.getName()));
     }
 
     /**

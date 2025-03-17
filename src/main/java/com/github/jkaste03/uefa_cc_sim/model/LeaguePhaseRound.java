@@ -42,9 +42,7 @@ public abstract class LeaguePhaseRound extends Round {
     protected abstract void seed();
 
     @Override
-    protected void draw() {
-
-    }
+    protected abstract void draw();
 
     /**
      * {@inheritDoc}

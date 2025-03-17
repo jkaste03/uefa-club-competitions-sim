@@ -36,7 +36,7 @@ public class DoubleLeggedTie extends Tie {
             club1GoalsLeg1 = results1[0];
             club2GoalsLeg1 = results1[1];
 
-            System.out.println(getScorelineLeg1());
+            // System.out.println(getScorelineLeg1());
         } else {
             int[] results2 = genScoreline();
             club1Goals = club1GoalsLeg1 + results2[0];
@@ -44,7 +44,7 @@ public class DoubleLeggedTie extends Tie {
 
             genWinner();
 
-            System.out.println(getScoreline());
+            // System.out.println(getScoreline());
         }
     }
 
