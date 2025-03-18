@@ -75,6 +75,8 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
             // System.out.println("\n" + getName() + ", pot " + (i + 1) + ":");
             printClubSlotList(pots.get(i));
         }
+
+        // System.out.println(pots.get(3).get(8).getName());
     }
 
     /**

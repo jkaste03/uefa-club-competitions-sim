@@ -23,6 +23,9 @@ mvnw.cmd
 *.tmp
 *.bak
 
+# Daily API data
+*.csv
+
 # OS-spesifikke filer
 .DS_Store
 Thumbs.db

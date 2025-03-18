@@ -26,7 +26,7 @@ import com.github.jkaste03.uefa_cc_sim.model.ClubRepository;
  * <p>
  * If a club's Elo rating is not found, the service returns 0.0 by default.
  */
-public class ClubEloDataLoader {
+public class ClubEloDataLoader implements Serializable {
     private static final String BASE_URL = "http://api.clubelo.com/";
     private static final String DATA_FOLDER = "src/main/java/com/github/jkaste03/uefa_cc_sim/data/";
     private static String filePath = DATA_FOLDER + LocalDate.now() + ".csv";

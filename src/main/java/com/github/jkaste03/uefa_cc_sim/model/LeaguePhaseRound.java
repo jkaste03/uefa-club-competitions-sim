@@ -59,4 +59,9 @@ public abstract class LeaguePhaseRound extends Round {
         throw new UnsupportedOperationException("Unimplemented method 'play'");
         // Todo: Update the clubEloDataLoader with the new Elo ratings after the matches
     }
+
+    @Override
+    public String toString() {
+        return "LeaguePhaseRound [getName()=" + getName() + ", pots=" + pots + ", toString()=" + super.toString() + "]";
+    }
 }

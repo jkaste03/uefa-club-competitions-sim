@@ -1,5 +1,6 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,7 @@ import com.github.jkaste03.uefa_cc_sim.service.JsonDataLoader;
  * seeding, draws, tie registrations, and match play are executed in an
  * organized manner.
  */
-public class Rounds {
+public class Rounds implements Serializable {
     // Declare qualifying rounds and league rounds for all competitions.
     private QRound uclQ1CP, uclQ2CP, uclQ2LP, uclQ3CP, uclQ3LP, uclPoCP, uclPoLP;
     private QRound uelQ1MP, uelQ2MP, uelQ3MP, uelQ3CP, uelPo;

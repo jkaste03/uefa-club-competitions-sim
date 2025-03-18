@@ -5,12 +5,14 @@ import java.util.Optional;
 
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData;
 import com.github.jkaste03.uefa_cc_sim.service.ClubEloDataLoader;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Abstract class representing a round in the UEFA competitions.
  */
-public abstract class Round {
+public abstract class Round implements Serializable {
     protected CompetitionData.Tournament tournament;
     protected CompetitionData.RoundType roundType;
     protected Round nextPrimaryRnd;
