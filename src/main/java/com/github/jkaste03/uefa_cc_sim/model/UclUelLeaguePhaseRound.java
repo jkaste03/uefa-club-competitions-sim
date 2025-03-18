@@ -75,8 +75,6 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
             // System.out.println("\n" + getName() + ", pot " + (i + 1) + ":");
             printClubSlotList(pots.get(i));
         }
-
-        // System.out.println(pots.get(3).get(8).getName());
     }
 
     /**
@@ -385,12 +383,6 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
 
         // Overfør de trukkede oppgjørene til ties-variabelen.
         ties = tempTies;
-
-        // System.out.println("Oppgjør:");
-        for (Tie tie : ties) {
-            // System.out.println(tie.getClubSlot1().getName() + " vs " +
-            // tie.getClubSlot2().getName());
-        }
     }
 
 }

@@ -170,11 +170,5 @@ public class UeclLeaguePhaseRound extends LeaguePhaseRound {
         }
         // Overfør de trukkede oppgjørene til ties-variabelen.
         ties = tempTies;
-
-        // System.out.println("Oppgjør:");
-        for (Tie tie : ties) {
-            // System.out.println(tie.getClubSlot1().getName() + " vs " +
-            // tie.getClubSlot2().getName());
-        }
     }
 }
