@@ -1,0 +1,35 @@
+# Maven build output
+/target/
+
+# Maven wrapper (hvis du bruker det)
+mvnw
+mvnw.cmd
+/.mvn/
+
+# IDE-spesifikke filer
+*.iml
+*.ipr
+*.iws
+.idea/
+.project
+.classpath
+.settings/
+
+# VS Code innstillinger
+.vscode/
+
+# Logg-, midlertidige og sikkerhetskopifiler
+*.log
+*.tmp
+*.bak
+
+# OS-spesifikke filer
+.DS_Store
+Thumbs.db
+
+# Maven spesifikke filer som ikke skal sjekkes inn
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.next
+pom.xml.versionsBackup
