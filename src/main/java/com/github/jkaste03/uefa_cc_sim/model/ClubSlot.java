@@ -1,6 +1,5 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
-import java.io.Serializable;
 import java.util.List;
 
 import com.github.jkaste03.uefa_cc_sim.enums.Country;
@@ -13,7 +12,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * properties
  * are determined for various club slot types.
  */
-public abstract class ClubSlot implements Serializable {
+public abstract class ClubSlot {
     /*
      * Retrieves the name associated with this club slot.
      * For individual clubs, this returns the club's name.

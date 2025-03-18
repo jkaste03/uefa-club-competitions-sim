@@ -1,5 +1,6 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
+import java.io.Serializable;
 import java.util.List;
 import com.github.jkaste03.uefa_cc_sim.enums.Country;
 
@@ -21,7 +22,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * float clubRanking = wrapper.getRanking();
  * </pre>
  */
-public class ClubIdWrapper extends ClubSlot {
+public class ClubIdWrapper extends ClubSlot implements Serializable {
     private int id;
 
     /**
