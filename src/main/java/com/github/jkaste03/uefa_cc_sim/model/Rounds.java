@@ -115,11 +115,17 @@ public class Rounds implements Serializable {
      * Initiates the simulation by executing all rounds in their respective order.
      * This method drives the simulation from qualifiers through league matches.
      */
-    public void run() {
+    public void run(String threadName) {
+        // long startTime = System.currentTimeMillis();
+
         // Start by processing the qualifying rounds.
         runQRounds();
         // Proceed to the league phase rounds.
         runLeagueRounds();
+
+        // long endTime = System.currentTimeMillis();
+        // System.out.println(threadName + ": Simulation took " + (endTime - startTime)
+        // + " milliseconds.");
     }
 
     /**
