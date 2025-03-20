@@ -35,6 +35,10 @@ public abstract class LeaguePhaseRound extends Round {
         return super.getName() + " " + CompetitionData.RoundType.LEAGUE_PHASE;
     }
 
+    public List<List<ClubSlot>> getPots() {
+        return pots;
+    }
+
     /**
      * Seeds the league phase round.
      */

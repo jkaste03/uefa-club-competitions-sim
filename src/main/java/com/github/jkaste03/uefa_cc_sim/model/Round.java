@@ -86,18 +86,18 @@ public abstract class Round implements Serializable {
     }
 
     /**
-     * Checks if a tie between two club slots is illegal based on political
-     * restrictions.
+     * Checks if a tie between two club slots is illegal based on political and
+     * other restrictions.
      * 
      * @param clubSlot1 the first club slot.
      * @param clubSlot2 the second club slot.
      * @return true if the tie is illegal, false otherwise.
      */
-    protected static boolean isIllegalTie(ClubSlot clubSlot1, ClubSlot clubSlot2) {
-        if (!hasCommonCountry(clubSlot1, clubSlot2)) {
-            return IllegalTies.isProhibited(clubSlot1, clubSlot2);
+    public boolean isIllegalTie(ClubSlot clubSlot1, ClubSlot clubSlot2) {
+        if (this instanceof QRound || this instanceof LeaguePhaseRound) {
+            return PoliticalTieRestrictions.isProhibited(clubSlot1, clubSlot2);
         }
-        return false;
+        return hasCommonCountry(clubSlot1, clubSlot2) || PoliticalTieRestrictions.isProhibited(clubSlot1, clubSlot2);
     }
 
     /**

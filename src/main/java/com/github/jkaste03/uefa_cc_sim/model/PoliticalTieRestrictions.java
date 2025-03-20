@@ -9,7 +9,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * Class containing all the illegal matchups based on political restrictions
  * decided by the UEFA Executive Committee.
  */
-public class IllegalTies {
+public class PoliticalTieRestrictions {
     /**
      * A set of illegal pairs of countries.
      * <p>
@@ -25,11 +25,11 @@ public class IllegalTies {
             Set.of(Country.UKR, Country.RUS));
 
     /**
-     * Checks if a pair of countries is prohibited.
+     * Checks if a pair of countries is politically prohibited.
      * 
-     * @param country1 the first country.
-     * @param country2 the second country.
-     * @return true if the pair is prohibited, false otherwise.
+     * @param country1 the first country
+     * @param country2 the second country
+     * @return true if the pair is prohibited, false otherwise
      */
     public static boolean isProhibited(Country country1, Country country2) {
         Set<Country> pair = new HashSet<>();
@@ -39,7 +39,8 @@ public class IllegalTies {
     }
 
     /**
-     * Checks if a match between two club slots is prohibited based on the involved
+     * Checks if a match between two club slots is politically prohibited based on
+     * the involved
      * countries.
      *
      * @param club1 the first club slot

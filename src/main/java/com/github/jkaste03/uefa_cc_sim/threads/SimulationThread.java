@@ -38,15 +38,14 @@ public class SimulationThread extends Thread {
         String threadName = Thread.currentThread().getName();
 
         // Run the simulation until the total iterations reach MAX_ITERATIONS
-        while (totalIterations.get() < MAX_ITERATIONS) {
+        while (totalIterations.getAndIncrement() < MAX_ITERATIONS) {
             // Create a deep copy of the rounds object to reuse the same data without
             // interacting with json
             Rounds roundsCopy = UefaCCSim.deepCopy(rounds);
             // Run the simulation with the copied rounds object
             roundsCopy.run(threadName);
 
-            // Increment the total iterations counter
-            int currentIterations = totalIterations.incrementAndGet();
+            int currentIterations = totalIterations.get();
             if (currentIterations >= MAX_ITERATIONS) {
                 break;
             }

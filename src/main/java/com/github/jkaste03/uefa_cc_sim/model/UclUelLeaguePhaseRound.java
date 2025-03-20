@@ -228,7 +228,7 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
                                     continue;
                                 if (currentAssigned.get(clubA).contains(clubB))
                                     continue;
-                                if (IllegalTies.isProhibited(clubA.getCountries().get(0), clubB.getCountries().get(0)))
+                                if (isIllegalTie(clubA, clubB))
                                     continue;
                                 if (!helper.canAddOpponent(clubA, clubB))
                                     continue;
@@ -304,7 +304,7 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
                                 continue;
                             if (currentAssigned.get(clubA).contains(clubB))
                                 continue;
-                            if (IllegalTies.isProhibited(clubA.getCountries().get(0), clubB.getCountries().get(0)))
+                            if (isIllegalTie(clubA, clubB))
                                 continue;
                             if (!helper.canAddOpponent(clubA, clubB))
                                 continue;
@@ -384,5 +384,4 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
         // Overfør de trukkede oppgjørene til ties-variabelen.
         ties = tempTies;
     }
-
 }

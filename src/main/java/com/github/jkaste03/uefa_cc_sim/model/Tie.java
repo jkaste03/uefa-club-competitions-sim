@@ -134,7 +134,8 @@ public abstract class Tie implements ClubSlot {
 
     @Override
     public String toString() {
-        return "Tie [clubSlot1=" + clubSlot1 + ", clubSlot2=" + clubSlot2 + ", winner=" + winner.getName()
-                + ", club1Goals=" + club1Goals + ", club2Goals=" + club2Goals + "]";
+        return "Tie [clubSlot1=" + clubSlot1 + ", clubSlot2=" + clubSlot2 + ", winner="
+                + (winner != null ? winner.getName() : "null") + ", club1Goals=" + club1Goals + ", club2Goals="
+                + club2Goals + "]";
     }
 }

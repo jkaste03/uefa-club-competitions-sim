@@ -132,7 +132,7 @@ public class UeclLeaguePhaseRound extends LeaguePhaseRound {
                     ClubSlot teamB = potB.get(i);
 
                     // Sjekk at oppgjøret ikke er forbudt (bruker gjerne den første landet i listen)
-                    if (IllegalTies.isProhibited(teamA, teamB)) {
+                    if (isIllegalTie(teamA, teamB)) {
                         failed = true;
                         break;
                     }

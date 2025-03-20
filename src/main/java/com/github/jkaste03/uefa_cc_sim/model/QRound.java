@@ -94,8 +94,8 @@ public class QRound extends Round {
         List<ClubSlot> remainingUnseeded = new ArrayList<>(unseededClubSlots);
         ties.clear();
 
-        // First, draw opponents for seeded clubs that have at least one club from the
-        // same country among the unseeded
+        // First, draw opponents for seeded clubs that have at least one club that it's
+        // illegal to meet
         seededClubSlots.stream()
                 .filter(seeded -> remainingUnseeded.stream().anyMatch(unseeded -> isIllegalTie(seeded, unseeded)))
                 .forEach(seeded -> {

@@ -161,7 +161,7 @@ public class Rounds implements Serializable {
      * @param roundType the type of round to filter by
      * @return a list of rounds matching the round type
      */
-    private List<Round> getRoundsOfType(RoundType roundType) {
+    public List<Round> getRoundsOfType(RoundType roundType) {
         return rounds.stream()
                 .filter(round -> round.getRoundType() == roundType)
                 .toList();
