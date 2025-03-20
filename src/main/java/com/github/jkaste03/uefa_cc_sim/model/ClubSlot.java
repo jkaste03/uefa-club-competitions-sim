@@ -12,7 +12,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * properties
  * are determined for various club slot types.
  */
-public abstract class ClubSlot {
+public interface ClubSlot {
     /*
      * Retrieves the name associated with this club slot.
      * For individual clubs, this returns the club's name.

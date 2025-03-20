@@ -22,7 +22,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * float clubRanking = wrapper.getRanking();
  * </pre>
  */
-public class ClubIdWrapper extends ClubSlot implements Serializable {
+public class ClubIdWrapper implements Serializable, ClubSlot {
     private int id;
 
     /**

@@ -29,10 +29,17 @@ public class UefaCCSim {
         // Record the start time
         long startTime = System.currentTimeMillis();
 
+        numberOfThreads = 1;
+
         // Create and start multiple threads for simulation
         for (int i = 0; i < numberOfThreads; i++) {
-            threads[i] = new SimulationThread("SimulationThread-" + (i + 1));
-            threads[i].start();
+            // threads[i] = new SimulationThread("SimulationThread-" + (i + 1));
+            // threads[i].start();
+            // Create a deep copy of the rounds object to reuse the same data without
+            // interacting with json
+            Rounds roundsCopy = UefaCCSim.deepCopy(rounds);
+            // Run the simulation with the copied rounds object
+            roundsCopy.run("threadName");
         }
 
         // Wait for all threads to finish

@@ -13,7 +13,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * It provides a convenient abstraction to access a tie's properties while also
  * having a flag that indicates which ranking should be used for seeding.
  */
-public class DoubleLeggedTieWrapper extends ClubSlot {
+public class DoubleLeggedTieWrapper implements ClubSlot {
     private DoubleLeggedTie tie;
     private boolean worstRankForSeeding;
 

@@ -14,7 +14,7 @@ import com.github.jkaste03.uefa_cc_sim.enums.Country;
  * Implementing classes should specify the details for the specific tie
  * format.
  */
-public abstract class Tie extends ClubSlot {
+public abstract class Tie implements ClubSlot {
     protected ClubSlot clubSlot1;
     protected ClubSlot clubSlot2;
     protected int club1Goals = -1;
