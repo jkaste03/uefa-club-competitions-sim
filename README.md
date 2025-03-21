@@ -6,7 +6,7 @@ This project simulates the UEFA Champions League, Europa League, and Conference 
 - Probabilities for clubs to reach specific tournament rounds.
 - Various other statistics derived from simulated match events.
 
-**Note:** This project is still under active development and is far from complete.
+**Note:** This project is still under active development and is far from complete. For me, this is a demanding project that will take considerable time to complete. It is one of my most ambitious projects. Keep that in mind (;
 
 ## Structure
 
@@ -15,14 +15,17 @@ The project follows Maven conventions and is organized into several packages:
 - **`com.github.jkaste03.uefa_cc_sim`**  
   Contains the main class `UefaCCSim`.
 
-- **`com.github.jkaste03.uefa_cc_sim.rounds`**  
-  Contains classes representing different tournament rounds.
+- **`com.github.jkaste03.uefa_cc_sim.enums`**  
+  Contains enums representing various competition data.
 
-- **`com.github.jkaste03.uefa_cc_sim.clubs`**  
-  Contains classes representing clubs, including their rankings and associated data.
+- **`com.github.jkaste03.uefa_cc_sim.model`**  
+  Contains classes representing different tournament rounds, clubs, and other models.
 
-- **`com.github.jkaste03.uefa_cc_sim.api`**  
-  Contains the `ClubEloAPI` class which fetches and stores Elo ratings for clubs.
+- **`com.github.jkaste03.uefa_cc_sim.service`**  
+  Contains services for loading data and fetching Elo ratings for clubs.
+
+- **`com.github.jkaste03.uefa_cc_sim.threads`**  
+  Contains the `SimulationThread` class for running simulations in parallel.
 
 - **`com.github.jkaste03.uefa_cc_sim.data`**  
   Contains data files (CSV and JSON) used in the simulations.
@@ -42,7 +45,8 @@ The project follows Maven conventions and is organized into several packages:
 
 ## Dependencies
 
-- **Jackson:** For reading JSON data.
+- **Gson:** For reading JSON data.
+- **JUnit:** For unit testing.
 - **Java Standard Library:** For basic functionality.
 
 ## License
