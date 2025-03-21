@@ -79,6 +79,10 @@ public class Rounds implements Serializable {
         linkRounds();
     }
 
+    public List<Round> getRounds() {
+        return rounds;
+    }
+
     /**
      * Establishes connections between rounds by assigning the next primary and
      * secondary rounds. These links define the simulation flow from initial
@@ -161,9 +165,11 @@ public class Rounds implements Serializable {
      * @param roundType the type of round to filter by
      * @return a list of rounds matching the round type
      */
-    public List<Round> getRoundsOfType(RoundType roundType) {
+    @SafeVarargs
+    public final List<Round> getRoundsOfType(RoundType... roundTypes) {
+        List<RoundType> roundTypeList = Arrays.asList(roundTypes);
         return rounds.stream()
-                .filter(round -> round.getRoundType() == roundType)
+                .filter(round -> roundTypeList.contains(round.getRoundType()))
                 .toList();
     }
 
