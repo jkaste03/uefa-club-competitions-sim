@@ -44,9 +44,10 @@ public class SimulationThread extends Thread {
             Rounds roundsCopy = UefaCCSim.deepCopy(rounds);
             // Run the simulation with the copied rounds object
             roundsCopy.run(threadName);
+            System.out.println("Thread " + threadName + " completed iteration " +
+                    totalIterations.get());
 
-            int currentIterations = totalIterations.get();
-            if (currentIterations >= MAX_ITERATIONS) {
+            if (totalIterations.get() >= MAX_ITERATIONS) {
                 break;
             }
         }

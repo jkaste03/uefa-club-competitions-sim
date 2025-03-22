@@ -95,9 +95,10 @@ public abstract class Round implements Serializable {
      */
     public boolean isIllegalTie(ClubSlot clubSlot1, ClubSlot clubSlot2) {
         if (this instanceof QRound || this instanceof LeaguePhaseRound) {
-            return PoliticalTieRestrictions.isProhibited(clubSlot1, clubSlot2);
+            return hasCommonCountry(clubSlot1, clubSlot2)
+                    || PoliticalTieRestrictions.isProhibited(clubSlot1, clubSlot2);
         }
-        return hasCommonCountry(clubSlot1, clubSlot2) || PoliticalTieRestrictions.isProhibited(clubSlot1, clubSlot2);
+        return PoliticalTieRestrictions.isProhibited(clubSlot1, clubSlot2);
     }
 
     /**

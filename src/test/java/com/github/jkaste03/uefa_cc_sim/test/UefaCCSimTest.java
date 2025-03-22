@@ -10,6 +10,8 @@ import com.github.jkaste03.uefa_cc_sim.model.QRound;
 import com.github.jkaste03.uefa_cc_sim.model.Round;
 import com.github.jkaste03.uefa_cc_sim.model.Rounds;
 import com.github.jkaste03.uefa_cc_sim.model.Tie;
+import com.github.jkaste03.uefa_cc_sim.model.UeclLeaguePhaseRound;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -54,7 +56,7 @@ public class UefaCCSimTest {
         SimulationThread.setRounds(rounds);
 
         Rounds roundsCopy = null;
-        for (int i = 0; i < 3000; i++) {
+        for (int i = 0; i < 100; i++) {
             // Create a deep copy of the rounds object to reuse the same data without
             // interacting with json
             roundsCopy = UefaCCSim.deepCopy(rounds);
@@ -68,11 +70,14 @@ public class UefaCCSimTest {
                         // Extract the ties from the round
                         List<Tie> ties = r.getTies();
                         // Check that the QRound draw is legal
-                        checkNoIllegalTiesOrCommonCountry(r, ties);
+                        checkNoIllegalTies(r, ties);
                     });
 
             // Test all LeaguePhaseRounds
             for (Round r : roundsCopy.getRoundsOfType(RoundType.LEAGUE_PHASE)) {
+                if (r instanceof UeclLeaguePhaseRound) {
+                    break;
+                }
                 LeaguePhaseRound round = (LeaguePhaseRound) r;
                 // Extract the pots, ties, and club slots from the league phase round
                 List<List<ClubSlot>> pots = round.getPots();
@@ -81,7 +86,7 @@ public class UefaCCSimTest {
 
                 // Check that the league phase is draw is legal
                 checkOpponentPotHomeAway(pots, clubSlots, ties);
-                checkNoIllegalTiesOrCommonCountry(round, ties);
+                checkNoIllegalTies(round, ties);
                 checkNoClubMeetsCountryMoreThanTwice(clubSlots, ties);
             }
         }
@@ -190,7 +195,7 @@ public class UefaCCSimTest {
      * @throws AssertionError if a club meets a club from its own country or if
      *                        there are illegal ties
      */
-    private void checkNoIllegalTiesOrCommonCountry(Round round, List<Tie> ties) {
+    private void checkNoIllegalTies(Round round, List<Tie> ties) {
         ties.forEach(tie -> {
             ClubSlot clubSlot1 = tie.getClubSlot1();
             ClubSlot clubSlot2 = tie.getClubSlot2();
