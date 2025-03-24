@@ -1,13 +1,6 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData.Tournament;
-import com.github.jkaste03.uefa_cc_sim.enums.Country;
 
 /**
  * Class representing the league phase in the UEFA Conference League.

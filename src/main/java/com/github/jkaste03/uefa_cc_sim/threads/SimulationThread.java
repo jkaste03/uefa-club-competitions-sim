@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SimulationThread extends Thread {
     private static Rounds rounds;
     private static AtomicInteger totalIterations = new AtomicInteger(0);
-    private static final int MAX_ITERATIONS = 1000;
+    private static final int MAX_ITERATIONS = 100;
 
     /**
      * Default constructor for the SimulationThread class.
@@ -44,8 +44,8 @@ public class SimulationThread extends Thread {
             Rounds roundsCopy = UefaCCSim.deepCopy(rounds);
             // Run the simulation with the copied rounds object
             roundsCopy.run(threadName);
-            System.out.println("Thread " + threadName + " completed iteration " +
-                    totalIterations.get());
+            // System.out.println("Thread " + threadName + " completed iteration " +
+            // totalIterations.get());
 
             if (totalIterations.get() >= MAX_ITERATIONS) {
                 break;

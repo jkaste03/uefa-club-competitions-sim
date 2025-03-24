@@ -108,35 +108,10 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
                 .sort((c1, c2) -> Float.compare(c1.getRanking(), c2.getRanking()));
     }
 
-    // --- Hjelpeklasse for sjekk av utenlandsbegrensning ---
-    class Helper {
-        boolean canAddOpponent(ClubSlot club, ClubSlot opponent,
-                Map<ClubSlot, Map<Country, Integer>> countryCounters) {
-            for (Country oppCountry : opponent.getCountries()) {
-                if (!club.getCountries().contains(oppCountry)) {
-                    int count = countryCounters.get(club).getOrDefault(oppCountry, 0);
-                    if (count >= 2) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        void updateCountryCounters(ClubSlot club, ClubSlot opponent,
-                Map<ClubSlot, Map<Country, Integer>> countryCounters) {
-            for (Country oppCountry : opponent.getCountries()) {
-                if (!club.getCountries().contains(oppCountry)) {
-                    int count = countryCounters.get(club).getOrDefault(oppCountry, 0);
-                    countryCounters.get(club).put(oppCountry, count + 1);
-                }
-            }
-        }
-    }
-
     @Override
     protected void draw() {
-        // --- Forbered data: mapping for klubb til pot, liste over alle klubber ---
+        // Lag en mapping fra klubb til hvilken pot den tilhører og en samlet liste over
+        // klubber.
         Map<ClubSlot, Integer> clubToPot = new HashMap<>();
         List<ClubSlot> allClubs = new ArrayList<>();
         for (int i = 0; i < pots.size(); i++) {
@@ -146,292 +121,267 @@ public class UclUelLeaguePhaseRound extends LeaguePhaseRound {
             }
         }
 
-        // --- Opprett krav for hver klubb ---
-        // For hver klubb skal vi ha en matrise med krav per pot:
-        // krav[p][0] = antall hjemmekamper mot klubber fra pot p (starter på 1)
-        // krav[p][1] = antall bortekamper mot klubber fra pot p (starter på 1)
-        Map<ClubSlot, int[][]> initialRequirements = new HashMap<>();
+        /*
+         * Opprett krav for hver klubb: For hver pot (0 .. POT_COUNT-1)
+         * må hver klubb spille nøyaktig 2 oppgjør – én der den er hjemmelag og én der
+         * den er bortelag.
+         * Vi lagrer kravene i et 2D-array for hver klubb:
+         * krav[p][0] = antall hjemmekamper mot klubber fra pot p (starter på 1)
+         * krav[p][1] = antall bortekamper mot klubber fra pot p (starter på 1)
+         */
+        Map<ClubSlot, int[][]> requirements = new HashMap<>();
         for (ClubSlot club : allClubs) {
             int[][] arr = new int[POT_COUNT][2];
             for (int p = 0; p < POT_COUNT; p++) {
-                arr[p][0] = 1;
-                arr[p][1] = 1;
+                arr[p][0] = 1; // Hjemmekamp-krav mot pot p
+                arr[p][1] = 1; // Bortekamp-krav mot pot p
             }
-            initialRequirements.put(club, arr);
+            requirements.put(club, arr);
         }
 
-        // --- Initielle strukturer for tildelte oppgjør og utenlandskalere ---
-        Map<ClubSlot, Set<ClubSlot>> initialAssigned = new HashMap<>();
+        // Holder oversikt over allerede trukkede oppgjør for å unngå duplikater.
+        Map<ClubSlot, Set<ClubSlot>> assignedOpponents = new HashMap<>();
         for (ClubSlot club : allClubs) {
-            initialAssigned.put(club, new HashSet<>());
+            assignedOpponents.put(club, new HashSet<>());
         }
-        Map<ClubSlot, Map<Country, Integer>> initialCountryCounters = new HashMap<>();
+
+        // Teller for antall oppgjør mot "utenlandske" land per klubb.
+        Map<ClubSlot, Map<Country, Integer>> countryCounters = new HashMap<>();
         for (ClubSlot club : allClubs) {
-            initialCountryCounters.put(club, new HashMap<>());
+            countryCounters.put(club, new HashMap<>());
         }
 
-        Helper helper = new Helper();
-
-        // Vi skal samle opp alle trukkede oppgjør i en liste.
-        List<Tie> finalTies = new ArrayList<>();
-
-        // --- Definer den rekursive søkefunksjonen ---
-        // Parametere:
-        // currentReq: nåværende krav for hver klubb
-        // currentAssigned: allerede tildelte oppgjør (for begge klubber)
-        // countryCounters: teller for utenlandske oppgjør
-        // tiesSoFar: oppbygde oppgjør til nå
-        // nextPhase: fasen vi jobber med: 0 = inter–pot, 1 = intra–pot.
-        //
-        // Vi løser først alle inter–pot oppgjør (mellom alle par (i,j) med i<j).
-        // Når disse er fullført, går vi over til intra–pot oppgjør.
-        boolean solved = solveMatches(
-                0, // start med inter–pot fase (fase 0)
-                initialRequirements,
-                initialAssigned,
-                initialCountryCounters,
-                finalTies,
-                allClubs,
-                helper,
-                clubToPot);
-
-        if (!solved) {
-            throw new RuntimeException("Kunne ikke fullføre trekningen uten deadlock.");
-        }
-
-        // Dersom vi kom hit, er finalTies fullstendig.
-        ties = finalTies;
-    }
-
-    /**
-     * Rekursiv funksjon for å tilordne oppgjør.
-     * 
-     * @param phase           0 = inter–pot, 1 = intra–pot.
-     * @param currentReq      gjeldende krav per klubb.
-     * @param currentAssigned allerede tildelte motstandere.
-     * @param countryCounters teller for utenlandske oppgjør.
-     * @param tiesSoFar       liste over oppgjør så langt.
-     * @param allClubs        liste over alle klubber.
-     * @param helper          hjelpemetoder for utenlandssjekk.
-     * @param clubToPot       mapping fra klubb til pot.
-     * @return true om en fullstendig løsning ble funnet, false ellers.
-     */
-    private boolean solveMatches(
-            int phase,
-            Map<ClubSlot, int[][]> currentReq,
-            Map<ClubSlot, Set<ClubSlot>> currentAssigned,
-            Map<ClubSlot, Map<Country, Integer>> countryCounters,
-            List<Tie> tiesSoFar,
-            List<ClubSlot> allClubs,
-            Helper helper,
-            Map<ClubSlot, Integer> clubToPot) {
-        // Velg hvilke par vi skal jobbe med i denne fasen:
-        // I fase 0 (inter–pot): for hver kombinasjon av potter i og j (i < j),
-        // må hver klubb i pot i møte en klubb i pot j (og vice versa).
-        // I fase 1 (intra–pot): for hver pot må vi tilordne oppgjør mellom klubbene i
-        // samme pot.
-
-        // Vi finner den "mest begrensede" (minimum remaining values) oppgaven.
-        // Oppgaven identifiseres ved en klubb A som fortsatt har et krav mot pot P.
-        // For inter–pot: dersom klubb A tilhører pot i og pot P = j med i != j.
-        // For intra–pot: pot P er lik klubbens egen pot.
-        ClubSlot nextClub = null;
-        int targetPot = -1;
-        boolean isHomeRequirement = false; // om kravet skal fylles som hjemmekamp for nextClub
-        int minCandidates = Integer.MAX_VALUE;
-        // Søk gjennom alle klubber og deres krav for å finne den med færrest lovlige
-        // kandidater.
-        for (ClubSlot club : allClubs) {
-            int clubPot = clubToPot.get(club);
-            int[][] req = currentReq.get(club);
-            // For hver pot vi må møte (0..POT_COUNT-1)
-            for (int p = 0; p < req.length; p++) {
-                // Bestem om vi er i inter–pot eller intra–pot for dette kravet
-                if ((phase == 0 && clubPot != p) || (phase == 1 && clubPot == p)) {
-                    // Sjekk hjemmekamp og bortekamp separat
-                    for (int j = 0; j < 2; j++) {
-                        if (req[p][j] > 0) {
-                            // Finn antall mulige kandidater for denne kombinasjonen:
-                            int candidates = countCandidates(club, p, j, currentReq, currentAssigned, countryCounters,
-                                    helper, clubToPot, allClubs);
-                            if (candidates < minCandidates) {
-                                minCandidates = candidates;
-                                nextClub = club;
-                                targetPot = p;
-                                isHomeRequirement = (j == 0);
-                            }
+        // Hjelpeklasse for å sjekke og oppdatere utenlandstak.
+        class Helper {
+            // Sjekker om klubb 'club' kan få et oppgjør mot 'opponent' uten å overskride
+            // maksen for utenlandske oppgjør.
+            boolean canAddOpponent(ClubSlot club, ClubSlot opponent) {
+                for (Country oppCountry : opponent.getCountries()) {
+                    if (!club.getCountries().contains(oppCountry)) {
+                        int count = countryCounters.get(club).getOrDefault(oppCountry, 0);
+                        if (count >= 2) {
+                            return false;
                         }
+                    }
+                }
+                return true;
+            }
+
+            // Oppdaterer telleren for 'club' med data fra 'opponent'.
+            void updateCountryCounters(ClubSlot club, ClubSlot opponent) {
+                for (Country oppCountry : opponent.getCountries()) {
+                    if (!club.getCountries().contains(oppCountry)) {
+                        int count = countryCounters.get(club).getOrDefault(oppCountry, 0);
+                        countryCounters.get(club).put(oppCountry, count + 1);
                     }
                 }
             }
         }
+        Helper helper = new Helper();
 
-        // Dersom ingen krav gjenstår i denne fasen, gå videre til neste fase eller
-        // avslutt.
-        if (nextClub == null) {
-            if (phase == 0) {
-                // Start intra–pot fase
-                return solveMatches(
-                        1,
-                        currentReq,
-                        currentAssigned,
-                        countryCounters,
-                        tiesSoFar,
-                        allClubs,
-                        helper,
-                        clubToPot);
-            } else {
-                // Ingen krav igjen i intra–pot – løsning funnet!
-                return true;
-            }
-        }
+        // Midlertidig liste for oppgjør (SingleLeggedTie) før vi bekrefter trekningen.
+        List<Tie> tempTies = new ArrayList<>();
+        Random random = new Random();
+        final int MAX_ATTEMPTS = 1000000;
+        boolean success = false;
 
-        // Få liste over kandidater for oppgjør for nextClub mot targetPot
-        List<ClubSlot> candidateOpponents = new ArrayList<>();
-        for (ClubSlot opp : allClubs) {
-            // Identifiser kandidatens pot basert på fasen:
-            int oppPot = clubToPot.get(opp);
-            if (phase == 0 && oppPot != targetPot)
-                continue;
-            if (phase == 1 && oppPot != clubToPot.get(nextClub))
-                continue;
-            // Skal oppgjøret dekke et krav for opp (fra nextClub sin pot)
-            int[][] oppReq = currentReq.get(opp);
-            if (oppReq[clubToPot.get(nextClub)][(isHomeRequirement ? 1 : 0)] <= 0)
-                continue;
-            if (currentAssigned.get(nextClub).contains(opp))
-                continue;
-            if (isIllegalTie(nextClub, opp))
-                continue;
-            if (!helper.canAddOpponent(nextClub, opp, countryCounters))
-                continue;
-            if (!helper.canAddOpponent(opp, nextClub, countryCounters))
-                continue;
-            candidateOpponents.add(opp);
-        }
-
-        // Dersom ingen kandidater finnes, backtrack.
-        if (candidateOpponents.isEmpty())
-            return false;
-
-        // For hver kandidat, prøv å tilordne oppgjøret og kall rekursivt.
-        // Vi oppdaterer både krav, assignedOpponents og landstellere.
-        for (ClubSlot opp : candidateOpponents) {
-            // Lag dype kopier av tilstandene slik at vi kan backtracke
-            Map<ClubSlot, int[][]> reqCopy = deepCopyRequirements(currentReq);
-            Map<ClubSlot, Set<ClubSlot>> assignedCopy = deepCopyAssigned(currentAssigned);
-            Map<ClubSlot, Map<Country, Integer>> countersCopy = deepCopyCounters(countryCounters);
-            List<Tie> tiesCopy = new ArrayList<>(tiesSoFar);
-
-            // Bestem oppsett: dersom nextClub fyller sin krav (hjemmekamp eller bortekamp)
-            // så må motparten fylle den komplementære (borte om nextClub er hjemme, ellers
-            // hjemme).
-            // Oppdater krav for nextClub og opp.
-            reqCopy.get(nextClub)[targetPot][(isHomeRequirement ? 0 : 1)]--;
-            reqCopy.get(opp)[clubToPot.get(nextClub)][(isHomeRequirement ? 1 : 0)]--;
-
-            // Registrer at nextClub og opp har blitt møtt.
-            assignedCopy.get(nextClub).add(opp);
-            assignedCopy.get(opp).add(nextClub);
-
-            // Oppdater landstellere for begge klubber.
-            helper.updateCountryCounters(nextClub, opp, countersCopy);
-            helper.updateCountryCounters(opp, nextClub, countersCopy);
-
-            // Legg til oppgjøret – rekkefølgen bestemmes av hvem som spiller hjemme.
-            Tie tie;
-            if (isHomeRequirement) {
-                tie = new SingleLeggedTie(nextClub, opp);
-            } else {
-                tie = new SingleLeggedTie(opp, nextClub);
-            }
-            tiesCopy.add(tie);
-
-            // Rekursivt kall med oppdatert tilstand.
-            if (solveMatches(phase, reqCopy, assignedCopy, countersCopy, tiesCopy, allClubs, helper, clubToPot)) {
-                // Dersom vi finner en løsning, kopier resultatene tilbake.
-                tiesSoFar.clear();
-                tiesSoFar.addAll(tiesCopy);
-                // Kopier over til currentReq, currentAssigned, countryCounters dersom de skal
-                // brukes etterpå.
-                currentReq.clear();
-                currentReq.putAll(reqCopy);
-                currentAssigned.clear();
-                currentAssigned.putAll(assignedCopy);
-                countryCounters.clear();
-                countryCounters.putAll(countersCopy);
-                return true;
-            }
-        }
-
-        // Ingen kandidat førte til full løsning: returner false.
-        return false;
-    }
-
-    /**
-     * Teller antall lovlige kandidater for et gitt krav.
-     */
-    private int countCandidates(
-            ClubSlot club,
-            int targetPot,
-            int homeFlag, // 0 for hjemmekrav, 1 for bortekrav
-            Map<ClubSlot, int[][]> currentReq,
-            Map<ClubSlot, Set<ClubSlot>> currentAssigned,
-            Map<ClubSlot, Map<Country, Integer>> countryCounters,
-            Helper helper,
-            Map<ClubSlot, Integer> clubToPot,
-            List<ClubSlot> allClubs) {
-        int count = 0;
-        for (ClubSlot opp : allClubs) {
-            int oppPot = clubToPot.get(opp);
-            if (clubToPot.get(club) == oppPot && targetPot != oppPot)
-                continue; // i inter–pot-fasen: velg bare motstandere fra riktig pot.
-            if (clubToPot.get(club) != oppPot && targetPot == oppPot && currentReq.get(club)[targetPot][homeFlag] <= 0)
-                continue;
-            // I intra–pot-fasen, velg bare motstandere fra samme pot.
-            if (!currentAssigned.get(club).contains(opp)
-                    && !isIllegalTie(club, opp)
-                    && helper.canAddOpponent(club, opp, countryCounters)
-                    && helper.canAddOpponent(opp, club, countryCounters)) {
-                // Sjekk om opp har det komplementære kravet.
-                int oppReq = currentReq.get(opp)[clubToPot.get(club)][(homeFlag == 0 ? 1 : 0)];
-                if (oppReq > 0) {
-                    count++;
+        attemptLoop: for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            // Nullstill krav, tildelte oppgjør og utenlandstellere for hver ny trekning.
+            Map<ClubSlot, int[][]> currentReq = new HashMap<>();
+            for (ClubSlot club : allClubs) {
+                int[][] arr = new int[POT_COUNT][2];
+                for (int p = 0; p < POT_COUNT; p++) {
+                    arr[p][0] = 1;
+                    arr[p][1] = 1;
                 }
+                currentReq.put(club, arr);
             }
-        }
-        return count;
-    }
-
-    /**
-     * Dype kopieringsmetoder for tilstandsstrukturer.
-     */
-    private Map<ClubSlot, int[][]> deepCopyRequirements(Map<ClubSlot, int[][]> original) {
-        Map<ClubSlot, int[][]> copy = new HashMap<>();
-        for (Map.Entry<ClubSlot, int[][]> entry : original.entrySet()) {
-            int[][] arr = new int[entry.getValue().length][2];
-            for (int i = 0; i < entry.getValue().length; i++) {
-                arr[i][0] = entry.getValue()[i][0];
-                arr[i][1] = entry.getValue()[i][1];
+            Map<ClubSlot, Set<ClubSlot>> currentAssigned = new HashMap<>();
+            for (ClubSlot club : allClubs) {
+                currentAssigned.put(club, new HashSet<>());
             }
-            copy.put(entry.getKey(), arr);
-        }
-        return copy;
-    }
+            // Nullstill countryCounters.
+            for (ClubSlot club : allClubs) {
+                countryCounters.get(club).clear();
+            }
+            tempTies.clear();
+            boolean failed = false;
 
-    private Map<ClubSlot, Set<ClubSlot>> deepCopyAssigned(Map<ClubSlot, Set<ClubSlot>> original) {
-        Map<ClubSlot, Set<ClubSlot>> copy = new HashMap<>();
-        for (Map.Entry<ClubSlot, Set<ClubSlot>> entry : original.entrySet()) {
-            copy.put(entry.getKey(), new HashSet<>(entry.getValue()));
-        }
-        return copy;
-    }
+            // --- Inter–pot oppgjør ---
+            // For alle par av potter (i, j) med i < j: hver klubb i pot i skal få et
+            // oppgjør mot en klubb i pot j.
+            for (int i = 0; i < POT_COUNT; i++) {
+                for (int j = i + 1; j < POT_COUNT; j++) {
+                    List<ClubSlot> clubsI = new ArrayList<>(pots.get(i));
+                    List<ClubSlot> clubsJ = new ArrayList<>(pots.get(j));
+                    Collections.shuffle(clubsI, random);
+                    Collections.shuffle(clubsJ, random);
 
-    private Map<ClubSlot, Map<Country, Integer>> deepCopyCounters(Map<ClubSlot, Map<Country, Integer>> original) {
-        Map<ClubSlot, Map<Country, Integer>> copy = new HashMap<>();
-        for (Map.Entry<ClubSlot, Map<Country, Integer>> entry : original.entrySet()) {
-            copy.put(entry.getKey(), new HashMap<>(entry.getValue()));
+                    for (ClubSlot clubA : clubsI) {
+                        int[][] reqA = currentReq.get(clubA);
+                        // Fortsett til kravene mot pot j er dekket (enten som hjem eller borte).
+                        while (reqA[j][0] + reqA[j][1] > 0) {
+                            List<ClubSlot> candidates = new ArrayList<>();
+                            for (ClubSlot clubB : clubsJ) {
+                                int[][] reqB = currentReq.get(clubB);
+                                if (reqB[i][0] + reqB[i][1] <= 0)
+                                    continue;
+                                if (currentAssigned.get(clubA).contains(clubB))
+                                    continue;
+                                if (isIllegalTie(clubA, clubB))
+                                    continue;
+                                if (!helper.canAddOpponent(clubA, clubB))
+                                    continue;
+                                if (!helper.canAddOpponent(clubB, clubA))
+                                    continue;
+                                // Sjekk om minst ett av de to mulige oppsett (A hjemme/B borte eller A borte/B
+                                // hjemme) er mulig.
+                                boolean option1 = reqA[j][0] > 0 && reqB[i][1] > 0;
+                                boolean option2 = reqA[j][1] > 0 && reqB[i][0] > 0;
+                                if (option1 || option2) {
+                                    candidates.add(clubB);
+                                }
+                            }
+                            if (candidates.isEmpty()) {
+                                failed = true;
+                                break;
+                            }
+                            ClubSlot clubB = candidates.get(random.nextInt(candidates.size()));
+                            int[][] reqB = currentReq.get(clubB);
+                            boolean option1 = reqA[j][0] > 0 && reqB[i][1] > 0; // clubA hjemme, clubB borte
+                            boolean option2 = reqA[j][1] > 0 && reqB[i][0] > 0; // clubA borte, clubB hjemme
+                            boolean chooseOption1;
+                            if (option1 && option2) {
+                                chooseOption1 = random.nextBoolean();
+                            } else if (option1) {
+                                chooseOption1 = true;
+                            } else if (option2) {
+                                chooseOption1 = false;
+                            } else {
+                                failed = true;
+                                break;
+                            }
+                            if (chooseOption1) {
+                                tempTies.add(new SingleLeggedTie(clubA, clubB));
+                                reqA[j][0]--; // clubA oppfyller et hjemmekamp-krav mot pot j
+                                reqB[i][1]--; // clubB oppfyller et bortekamp-krav mot pot i
+                            } else {
+                                tempTies.add(new SingleLeggedTie(clubB, clubA));
+                                reqA[j][1]--; // clubA oppfyller et bortekamp-krav mot pot j
+                                reqB[i][0]--; // clubB oppfyller et hjemmekamp-krav mot pot i
+                            }
+                            currentAssigned.get(clubA).add(clubB);
+                            currentAssigned.get(clubB).add(clubA);
+                            helper.updateCountryCounters(clubA, clubB);
+                            helper.updateCountryCounters(clubB, clubA);
+                        }
+                        if (failed)
+                            break;
+                    }
+                    if (failed)
+                        break;
+                }
+                if (failed)
+                    break;
+            }
+            if (failed)
+                continue attemptLoop;
+
+            // --- Intra–pot oppgjør ---
+            // For hver pot trekkes oppgjør mellom klubber i samme pot.
+            for (int i = 0; i < POT_COUNT; i++) {
+                List<ClubSlot> clubs = new ArrayList<>(pots.get(i));
+                Collections.shuffle(clubs, random);
+                for (ClubSlot clubA : clubs) {
+                    int[][] reqA = currentReq.get(clubA);
+                    while (reqA[i][0] + reqA[i][1] > 0) {
+                        List<ClubSlot> candidates = new ArrayList<>();
+                        for (ClubSlot clubB : clubs) {
+                            if (clubA.equals(clubB))
+                                continue;
+                            int[][] reqB = currentReq.get(clubB);
+                            if (reqB[i][0] + reqB[i][1] <= 0)
+                                continue;
+                            if (currentAssigned.get(clubA).contains(clubB))
+                                continue;
+                            if (isIllegalTie(clubA, clubB))
+                                continue;
+                            if (!helper.canAddOpponent(clubA, clubB))
+                                continue;
+                            if (!helper.canAddOpponent(clubB, clubA))
+                                continue;
+                            boolean option1 = reqA[i][0] > 0 && reqB[i][1] > 0;
+                            boolean option2 = reqA[i][1] > 0 && reqB[i][0] > 0;
+                            if (option1 || option2) {
+                                candidates.add(clubB);
+                            }
+                        }
+                        if (candidates.isEmpty()) {
+                            failed = true;
+                            break;
+                        }
+                        ClubSlot clubB = candidates.get(random.nextInt(candidates.size()));
+                        int[][] reqB = currentReq.get(clubB);
+                        boolean option1 = reqA[i][0] > 0 && reqB[i][1] > 0;
+                        boolean option2 = reqA[i][1] > 0 && reqB[i][0] > 0;
+                        boolean chooseOption1;
+                        if (option1 && option2) {
+                            chooseOption1 = random.nextBoolean();
+                        } else if (option1) {
+                            chooseOption1 = true;
+                        } else if (option2) {
+                            chooseOption1 = false;
+                        } else {
+                            failed = true;
+                            break;
+                        }
+                        if (chooseOption1) {
+                            tempTies.add(new SingleLeggedTie(clubA, clubB));
+                            reqA[i][0]--;
+                            reqB[i][1]--;
+                        } else {
+                            tempTies.add(new SingleLeggedTie(clubB, clubA));
+                            reqA[i][1]--;
+                            reqB[i][0]--;
+                        }
+                        currentAssigned.get(clubA).add(clubB);
+                        currentAssigned.get(clubB).add(clubA);
+                        helper.updateCountryCounters(clubA, clubB);
+                        helper.updateCountryCounters(clubB, clubA);
+                    }
+                    if (failed)
+                        break;
+                }
+                if (failed)
+                    break;
+            }
+            if (failed)
+                continue attemptLoop;
+
+            // Verifiser at alle krav er oppfylt
+            boolean allMet = true;
+            for (ClubSlot club : allClubs) {
+                int[][] r = currentReq.get(club);
+                for (int p = 0; p < POT_COUNT; p++) {
+                    if (r[p][0] != 0 || r[p][1] != 0) {
+                        allMet = false;
+                        break;
+                    }
+                }
+                if (!allMet)
+                    break;
+            }
+            if (!allMet)
+                continue attemptLoop;
+            success = true;
+            break;
+        } // end attemptLoop
+
+        if (!success) {
+            throw new RuntimeException("Kunne ikke fullføre trekningen uten deadlock etter maks antall forsøk.");
         }
-        return copy;
+
+        // Overfør de trukkede oppgjørene til ties-variabelen.
+        ties = tempTies;
     }
 }
