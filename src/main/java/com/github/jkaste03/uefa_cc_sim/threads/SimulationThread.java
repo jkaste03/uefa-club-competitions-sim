@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SimulationThread extends Thread {
     private static Rounds rounds;
     private static AtomicInteger totalIterations = new AtomicInteger(0);
-    private static final int MAX_ITERATIONS = 100;
+    private static final int MAX_ITERATIONS = 1;
 
     /**
      * Default constructor for the SimulationThread class.

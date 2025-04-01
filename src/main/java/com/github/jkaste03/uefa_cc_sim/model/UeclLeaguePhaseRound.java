@@ -1,6 +1,18 @@
 package com.github.jkaste03.uefa_cc_sim.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import org.drools.modelcompiler.consequence.FactHandleLookup.Single;
+
 import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData.Tournament;
+import com.github.jkaste03.uefa_cc_sim.enums.Country;
 
 /**
  * Class representing the league phase in the UEFA Conference League.
@@ -9,6 +21,9 @@ import com.github.jkaste03.uefa_cc_sim.enums.CompetitionData.Tournament;
  */
 public class UeclLeaguePhaseRound extends LeaguePhaseRound {
     private final static int POT_COUNT = 6;
+
+    // Mapping fra klubb til pot (0-indexert) – fylles ved init.
+    private Map<ClubSlot, Integer> clubToPot;
 
     /**
      * Constructs a ConferenceLeaguePhaseRound with the specified tournament.
@@ -52,119 +67,141 @@ public class UeclLeaguePhaseRound extends LeaguePhaseRound {
         }
     }
 
+    private static class Helper {
+        public boolean canAddOpponent(ClubSlot club, ClubSlot opponent,
+                Map<ClubSlot, Map<Country, Integer>> countryCounters) {
+            for (Country oppCountry : opponent.getCountries()) {
+                if (!club.getCountries().contains(oppCountry)) {
+                    int count = countryCounters.get(club).getOrDefault(oppCountry, 0);
+                    if (count >= 2) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public void updateCountryCounters(ClubSlot club, ClubSlot opponent,
+                Map<ClubSlot, Map<Country, Integer>> countryCounters) {
+            for (Country oppCountry : opponent.getCountries()) {
+                if (!club.getCountries().contains(oppCountry)) {
+                    int count = countryCounters.get(club).getOrDefault(oppCountry, 0);
+                    countryCounters.get(club).put(oppCountry, count + 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returnerer underpot-indeksen for en gitt pot-indeks.
+     * Underpot 0: pot 0 og 1, Underpot 1: pot 2 og 3, Underpot 2: pot 4 og 5.
+     */
+    private int getUnderpot(int potIndex) {
+        return potIndex / 2;
+    }
+
+    /**
+     * Trekker ligaoppsettet for Conference League. Algoritmen deles opp på
+     * underpot-grupper.
+     * For hver underpot (to pot-er) trekkes to legs: én der klubbene i den "første"
+     * poten har hjemme,
+     * og én der de bytter rolle. Backtracking brukes for å unngå deadlock.
+     */
     @Override
     protected void draw() {
-        // // For Conference League har vi seks pot-er (indeksert 0..5).
-        // // Trekningen skal gjøres i tre par: (pot 0 og 1), (pot 2 og 3) og (pot 4 og
-        // 5).
-        // final int NUM_PAIRINGS = 3;
-        // final int MAX_ATTEMPTS = 1000000;
-        // Random random = new Random();
-        // List<Tie> tempTies = new ArrayList<>();
+        // Oppsett for å telle antall "utenlandsoppgjør" for hver klubb.
+        Map<ClubSlot, Map<Country, Integer>> countryCounters = new HashMap<>();
+        for (ClubSlot club : clubSlots) {
+            countryCounters.put(club, new HashMap<>());
+        }
+        Helper helper = new Helper();
+        Random rnd = new Random();
 
-        // // Hjelpefunksjoner for utenlandstak (maks to oppgjør per fremmedland)
-        // // Sjekker om et oppgjør kan legges til for 'club' med tanke på 'opponent'
-        // // med hensyn til utenlandstak.
-        // class Helper {
-        // boolean canAddOpponent(ClubSlot club, ClubSlot opponent,
-        // Map<ClubSlot, Map<Country, Integer>> counters) {
-        // for (Country oppCountry : opponent.getCountries()) {
-        // if (!club.getCountries().contains(oppCountry)) {
-        // int count = counters.get(club).getOrDefault(oppCountry, 0);
-        // if (count >= 2) {
-        // return false;
-        // }
-        // }
-        // }
-        // return true;
-        // }
+        // For hver underpot: (pot 0/1, 2/3, 4/5)
+        for (int up = 0; up < 3; up++) {
+            int potA = up * 2;
+            int potB = up * 2 + 1;
+            // Leg 1: klubbene i potA er hjemme, potB er borte.
+            List<ClubSlot> homeList = new ArrayList<>(pots.get(potA));
+            List<ClubSlot> awayList = new ArrayList<>(pots.get(potB));
+            Collections.shuffle(homeList, rnd);
+            Collections.shuffle(awayList, rnd);
+            if (!pairClubs(homeList, awayList, countryCounters, helper, rnd)) {
+                throw new IllegalStateException("Deadlock i trekk for underpot " + up + " leg 1.");
+            }
+            // Leg 2: bytt roller – potB hjemme, potA borte.
+            homeList = new ArrayList<>(pots.get(potB));
+            awayList = new ArrayList<>(pots.get(potA));
+            Collections.shuffle(homeList, rnd);
+            Collections.shuffle(awayList, rnd);
+            if (!pairClubs(homeList, awayList, countryCounters, helper, rnd)) {
+                throw new IllegalStateException("Deadlock i trekk for underpot " + up + " leg 2.");
+            }
+        }
+    }
 
-        // void updateCountryCounters(ClubSlot club, ClubSlot opponent,
-        // Map<ClubSlot, Map<Country, Integer>> counters) {
-        // for (Country oppCountry : opponent.getCountries()) {
-        // if (!club.getCountries().contains(oppCountry)) {
-        // int count = counters.get(club).getOrDefault(oppCountry, 0);
-        // counters.get(club).put(oppCountry, count + 1);
-        // }
-        // }
-        // }
-        // }
-        // Helper helper = new Helper();
+    /**
+     * Forsøker å parre alle klubbene i homeList med en gyldig motstander i
+     * awayList.
+     * Metoden bruker backtracking for å unngå deadlock.
+     *
+     * @param homeList        listen med hjemmeklubber (som skal trekkes)
+     * @param awayList        listen med borteklubber
+     * @param countryCounters teller for antall utenlandsoppgjør for hver klubb
+     * @param helper          instans av hjelpeklasse for sjekk og oppdatering
+     * @param rnd             Random-instans for shuffling
+     * @return true om parringen lykkes, false ellers.
+     */
+    private boolean pairClubs(List<ClubSlot> homeList, List<ClubSlot> awayList,
+            Map<ClubSlot, Map<Country, Integer>> countryCounters,
+            Helper helper, Random rnd) {
+        if (homeList.isEmpty()) {
+            return true;
+        }
+        // Velg den første hjemmeklubben (rekkefølge er tilfeldig pga. shuffling)
+        ClubSlot homeClub = homeList.remove(0);
+        List<ClubSlot> awayCandidates = new ArrayList<>(awayList);
+        Collections.shuffle(awayCandidates, rnd);
 
-        // boolean success = false;
-        // attemptLoop: for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-        // tempTies.clear();
-        // boolean failed = false;
-        // // Opprett og nullstill countryCounters for alle klubber i alle pot-er.
-        // Map<ClubSlot, Map<Country, Integer>> countryCounters = new HashMap<>();
-        // for (int i = 0; i < pots.size(); i++) {
-        // for (ClubSlot club : pots.get(i)) {
-        // countryCounters.put(club, new HashMap<>());
-        // }
-        // }
+        for (ClubSlot awayClub : awayCandidates) {
+            // Sjekk om tie-en er lovlig for begge retninger
+            if (isIllegalTie(homeClub, awayClub) || isIllegalTie(awayClub, homeClub)) {
+                continue;
+            }
+            if (!helper.canAddOpponent(homeClub, awayClub, countryCounters)
+                    || !helper.canAddOpponent(awayClub, homeClub, countryCounters)) {
+                continue;
+            }
+            // Forbered backup av countrystatistikken
+            Map<Country, Integer> homeBackup = new HashMap<>(countryCounters.get(homeClub));
+            Map<Country, Integer> awayBackup = new HashMap<>(countryCounters.get(awayClub));
 
-        // // For hvert pot-par (f.eks. pot 0 og 1, 2 og 3, 4 og 5)
-        // for (int pairing = 0; pairing < NUM_PAIRINGS; pairing++) {
-        // int potAIndex = pairing * 2; // 0, 2, 4
-        // int potBIndex = potAIndex + 1; // 1, 3, 5
+            // Oppdater countrystatistikken for begge klubber
+            helper.updateCountryCounters(homeClub, awayClub, countryCounters);
+            helper.updateCountryCounters(awayClub, homeClub, countryCounters);
 
-        // // Kopier og bland lagene i de to pottene
-        // List<ClubSlot> potA = new ArrayList<>(pots.get(potAIndex));
-        // List<ClubSlot> potB = new ArrayList<>(pots.get(potBIndex));
-        // Collections.shuffle(potA, random);
-        // Collections.shuffle(potB, random);
+            // Legg til tie-en globalt
+            Tie tie = new SingleLeggedTie(homeClub, awayClub);
+            ties.add(tie);
 
-        // // Forutsetter at antall lag i de to pottene er like
-        // if (potA.size() != potB.size()) {
-        // failed = true;
-        // break;
-        // }
+            // Fjern valgt awayClub fra available-listen
+            awayList.remove(awayClub);
 
-        // // Prøv å pare lagene ett–til–ett etter rekkefølge
-        // for (int i = 0; i < potA.size(); i++) {
-        // ClubSlot teamA = potA.get(i);
-        // ClubSlot teamB = potB.get(i);
-
-        // // Sjekk at oppgjøret ikke er forbudt (bruker gjerne den første landet i
-        // listen)
-        // if (isIllegalTie(teamA, teamB)) {
-        // failed = true;
-        // break;
-        // }
-        // // Sjekk utenlandstak for begge parter
-        // if (!helper.canAddOpponent(teamA, teamB, countryCounters)) {
-        // failed = true;
-        // break;
-        // }
-        // if (!helper.canAddOpponent(teamB, teamA, countryCounters)) {
-        // failed = true;
-        // break;
-        // }
-        // // Dersom alt er OK: Opprett to ties, én med teamA hjemme og én med teamB
-        // // hjemme.
-        // tempTies.add(new SingleLeggedTie(teamA, teamB));
-        // tempTies.add(new SingleLeggedTie(teamB, teamA));
-        // // Oppdater tellere for utenlandske oppgjør
-        // helper.updateCountryCounters(teamA, teamB, countryCounters);
-        // helper.updateCountryCounters(teamB, teamA, countryCounters);
-        // }
-        // if (failed) {
-        // break; // Gå ut av pot-par-loopen dersom et par feiler
-        // }
-        // }
-        // if (failed) {
-        // continue attemptLoop; // Prøv en ny trekning dersom noe gikk galt
-        // }
-        // success = true;
-        // break;
-        // } // end attemptLoop
-
-        // if (!success) {
-        // throw new RuntimeException(
-        // "Kunne ikke fullføre Conference League trekning uten deadlock etter maks
-        // antall forsøk.");
-        // }
-        // // Overfør de trukkede oppgjørene til ties-variabelen.
-        // ties = tempTies;
+            // Prøv å parre resten rekursivt
+            if (pairClubs(homeList, awayList, countryCounters, helper, rnd)) {
+                return true;
+            }
+            // Backtracking: fjern tie-en, gjenopprett countrystatistikk og legg tilbake
+            // awayClub.
+            ties.remove(tie);
+            countryCounters.put(homeClub, homeBackup);
+            countryCounters.put(awayClub, awayBackup);
+            awayList.add(awayClub);
+            // Gjenopprett rekkefølgen ved å shufflere bortelisten
+            Collections.shuffle(awayList, rnd);
+        }
+        // Legg tilbake homeClub før vi returnerer false (backtracking)
+        homeList.add(0, homeClub);
+        return false;
     }
 }

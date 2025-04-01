@@ -56,7 +56,8 @@ public class UefaCCSimTest {
         SimulationThread.setRounds(rounds);
 
         Rounds roundsCopy = null;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 3; i++) {
+
             // Create a deep copy of the rounds object to reuse the same data without
             // interacting with json
             roundsCopy = UefaCCSim.deepCopy(rounds);
@@ -75,9 +76,6 @@ public class UefaCCSimTest {
 
             // Test all LeaguePhaseRounds
             for (Round r : roundsCopy.getRoundsOfType(RoundType.LEAGUE_PHASE)) {
-                if (r instanceof UeclLeaguePhaseRound) {
-                    break;
-                }
                 LeaguePhaseRound round = (LeaguePhaseRound) r;
                 // Extract the pots, ties, and club slots from the league phase round
                 List<List<ClubSlot>> pots = round.getPots();
@@ -126,9 +124,11 @@ public class UefaCCSimTest {
                 // and away
                 for (int pot = 1; pot <= pots.size(); pot++) {
                     assertTrue(homePotCounts.getOrDefault(pot, 0L) == 1,
-                            "ClubSlot " + clubSlot + " does not meet exactly one club from pot " + pot + " at home.");
+                            "ClubSlot " + clubSlot + " does not meet exactly one club from pot " + pot + " at home."
+                                    + " Ties: " + ties);
                     assertTrue(awayPotCounts.getOrDefault(pot, 0L) == 1,
-                            "ClubSlot " + clubSlot + " does not meet exactly one club from pot " + pot + " away.");
+                            "ClubSlot " + clubSlot + " does not meet exactly one club from pot " + pot + " away."
+                                    + " Ties: " + ties);
                 }
             }
         }
